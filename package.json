@@ -1,0 +1,54 @@
+{
+  "name": "cc-devtool",
+  "version": "0.1.0",
+  "description": "AI Agent Execution Debugger - Visualize skill, rule, MCP, agent execution chains across Claude Code, Cursor, and Codex",
+  "type": "module",
+  "bin": {
+    "cc-devtool": "./dist/bin/cc-devtool.js"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "build:server": "tsc -p tsconfig.node.json",
+    "build:all": "npm run build && npm run build:server",
+    "preview": "vite preview",
+    "serve": "tsx cli/index.ts serve",
+    "start": "npm run serve"
+  },
+  "keywords": [
+    "ai",
+    "agent",
+    "debugger",
+    "devtool",
+    "claude",
+    "cursor",
+    "codex"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@xyflow/react": "^12.10.1",
+    "chokidar": "^5.0.0",
+    "commander": "^14.0.3",
+    "express": "^5.2.1",
+    "fast-glob": "^3.3.3",
+    "open": "^11.0.0",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "react-router-dom": "^7.13.1",
+    "recharts": "^3.8.0",
+    "ws": "^8.20.0",
+    "zustand": "^5.0.12"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.2.2",
+    "@types/express": "^5.0.6",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@types/ws": "^8.18.1",
+    "@vitejs/plugin-react": "^6.0.1",
+    "tailwindcss": "^4.2.2",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "vite": "^8.0.1"
+  }
+}
