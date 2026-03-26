@@ -44,23 +44,26 @@ export async function listCursorSessions(): Promise<SessionSummary[]> {
       if (!st?.isDirectory()) continue
 
       const entries = await readdir(transcriptsDir).catch(() => [] as string[])
+
+      for (const entry of entries) {
+        if (entry.endsWith('.txt')) {
+          const sessionId = basename(entry, '.txt')
+          const entryPath = join(transcriptsDir, entry)
+          const summary = await buildCursorTxtSummary(sessionId, projDir, entryPath)
+          if (summary) sessionMap.set(summary.id, summary)
+        }
+      }
+
       for (const entry of entries) {
         const entryPath = join(transcriptsDir, entry)
         const entryStat = await stat(entryPath).catch(() => null)
 
         if (entryStat?.isDirectory()) {
+          if (sessionMap.has(entry)) continue
           const jsonlPath = join(entryPath, `${entry}.jsonl`)
           const jsonlStat = await stat(jsonlPath).catch(() => null)
           if (jsonlStat?.isFile()) {
             const summary = await buildCursorSummary(entry, projDir, jsonlPath, transcriptsDir)
-            if (summary) sessionMap.set(summary.id, summary)
-          }
-        }
-
-        if (entry.endsWith('.txt')) {
-          const sessionId = basename(entry, '.txt')
-          if (!sessionMap.has(sessionId)) {
-            const summary = await buildCursorTxtSummary(sessionId, projDir, entryPath)
             if (summary) sessionMap.set(summary.id, summary)
           }
         }
@@ -140,6 +143,8 @@ async function buildCursorTxtSummary(
     }
 
     const toolCallMatches = content.match(/\[Tool call\]/g)
+    const fileToolMatches = content.match(/\[Tool call\]\s+(?:Read|Write|StrReplace|Delete|EditNotebook|Glob|Grep)\b/g)
+    const agentMatches = content.match(/\[Tool call\]\s+(?:Task|Subagent)\b/g)
     const fileStat = await stat(filePath).catch(() => null)
 
     return {
@@ -152,8 +157,8 @@ async function buildCursorTxtSummary(
       status: 'completed',
       turnCount: (content.match(/^(user|assistant):/gm) ?? []).length,
       toolCallCount: toolCallMatches?.length ?? 0,
-      fileOpCount: 0,
-      agentCount: 1,
+      fileOpCount: fileToolMatches?.length ?? 0,
+      agentCount: 1 + (agentMatches?.length ?? 0),
       tokenUsage: emptyTokenUsage(),
       filePath,
     }

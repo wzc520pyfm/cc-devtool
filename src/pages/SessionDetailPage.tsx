@@ -26,6 +26,7 @@ export default function SessionDetailPage() {
   useEffect(() => {
     if (tool && id) {
       setLoading(true)
+      setActiveTab('timeline')
       fetchSessionDetail(tool, id).then((s) => {
         setSession(s)
         setLoading(false)
