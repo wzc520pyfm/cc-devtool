@@ -56,6 +56,17 @@ export default function SessionDetailPage() {
     codex: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30',
   }
 
+  const readCount = session.fileOps.filter((op) => op.type === 'read').length
+  const writeCount = session.fileOps.filter((op) => op.type !== 'read').length
+  const shellCount = session.turns
+    .flatMap((t) => t.blocks)
+    .filter((b) => b.type === 'tool_use' && (b as { type: 'tool_use'; toolCall: { category: string } }).toolCall.category === 'shell')
+    .length
+  const totalToolCalls = session.turns
+    .flatMap((t) => t.blocks)
+    .filter((b) => b.type === 'tool_use')
+    .length
+
   return (
     <div className="flex flex-col h-full">
       <div className="border-b border-zinc-800 p-4">
@@ -65,16 +76,34 @@ export default function SessionDetailPage() {
           >
             {session.tool}
           </span>
-          <h2 className="text-lg font-semibold truncate">
+          <h2 className="text-lg font-semibold truncate flex-1">
             {session.title || session.project}
           </h2>
+          {session.model && (
+            <span className="text-[10px] text-zinc-600 font-mono bg-zinc-800/50 px-2 py-0.5 rounded">
+              {session.model}
+            </span>
+          )}
         </div>
         <div className="flex items-center gap-4 mt-2 text-xs text-zinc-500">
           <span>{new Date(session.startTime).toLocaleString()}</span>
+          <span className="text-zinc-700">|</span>
           <span>{session.turns.length} turns</span>
-          <span>{session.fileOps.length} file ops</span>
+          <span>{totalToolCalls} tool calls</span>
+          <span className="text-blue-400/70">{readCount} reads</span>
+          <span className="text-green-400/70">{writeCount} writes</span>
+          <span className="text-orange-400/70">{shellCount} cmds</span>
+          {session.skillHits.length > 0 && (
+            <span className="text-yellow-400/70">{session.skillHits.length} skills</span>
+          )}
+          {session.ruleRefs.length > 0 && (
+            <span className="text-indigo-400/70">{session.ruleRefs.length} rules</span>
+          )}
           {session.tokenUsage.totalTokens > 0 && (
-            <span>{session.tokenUsage.totalTokens.toLocaleString()} tokens</span>
+            <>
+              <span className="text-zinc-700">|</span>
+              <span>{session.tokenUsage.totalTokens.toLocaleString()} tokens</span>
+            </>
           )}
         </div>
       </div>

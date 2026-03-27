@@ -60,13 +60,18 @@ export default function ToolCallCard({ toolCall }: Props) {
 function getToolSummary(tc: ToolCall): string {
   switch (tc.name) {
     case 'Read':
+    case 'read_file':
       return (tc.input.path ?? tc.input.file_path ?? '') as string
     case 'Write':
+    case 'write_file':
       return (tc.input.path ?? tc.input.file_path ?? '') as string
     case 'StrReplace':
+    case 'apply_patch':
       return (tc.input.path ?? '') as string
     case 'Shell':
       return ((tc.input.command ?? '') as string).slice(0, 100)
+    case 'exec_command':
+      return ((tc.input.cmd ?? tc.input.command ?? '') as string).slice(0, 100)
     case 'Grep':
       return `/${tc.input.pattern ?? ''}/ in ${tc.input.path ?? '.'}`
     case 'Glob':

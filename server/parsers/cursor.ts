@@ -120,6 +120,7 @@ async function buildCursorSummary(
     agentCount,
     tokenUsage: emptyTokenUsage(),
     filePath,
+    hasToolData: false,
   }
 }
 
@@ -161,6 +162,7 @@ async function buildCursorTxtSummary(
       agentCount: 1 + (agentMatches?.length ?? 0),
       tokenUsage: emptyTokenUsage(),
       filePath,
+      hasToolData: true,
     }
   } catch {
     return null
@@ -220,14 +222,14 @@ function parseParams(text: string): Record<string, unknown> {
   let currentValue = ''
 
   for (const line of lines) {
-    const keyMatch = line.match(/^\s{2}(\w+):\s*(.*)/)
+    const keyMatch = line.match(/^\s*(\w+):\s*(.*)/)
     if (keyMatch) {
       if (currentKey) {
         params[currentKey] = tryParseJson(currentValue.trim())
       }
       currentKey = keyMatch[1]
       currentValue = keyMatch[2]
-    } else if (currentKey && line.startsWith('    ')) {
+    } else if (currentKey && /^\s{4}/.test(line)) {
       currentValue += '\n' + line.trimStart()
     }
   }
@@ -432,6 +434,21 @@ async function parseCursorTxtSession(filePath: string): Promise<Session> {
   }
 }
 
+function isSkillPath(path: string): boolean {
+  return /SKILL\.md$/i.test(path) || /\/skills\//.test(path)
+}
+
+function isRulePath(path: string): boolean {
+  return (
+    /\.cursor\/rules\//.test(path) ||
+    /\.cursorrules$/i.test(path) ||
+    /CLAUDE\.md$/i.test(path) ||
+    /AGENTS\.md$/i.test(path) ||
+    /\.claude\/settings/i.test(path) ||
+    /rules\/.*\.mdc?$/i.test(path)
+  )
+}
+
 function processFileOp(
   tc: ToolCall,
   agentId: string,
@@ -444,13 +461,20 @@ function processFileOp(
 
   if (tc.category === 'file_read' && path) {
     fileOps.push({ path, type: 'read', agentId, timestamp: tc.timestamp, toolCallId: tc.id })
-    if (path.includes('.cursor/rules/') || path.includes('CLAUDE.md') || path.includes('SKILL.md')) {
+    if (isSkillPath(path)) {
+      const name = path.split('/').slice(-2).join('/')
+      skillHits.push({ name, fullPath: path, agentId, timestamp: tc.timestamp, toolCallId: tc.id })
+    } else if (isRulePath(path)) {
       ruleRefs.push({ path, agentId, timestamp: tc.timestamp })
     }
   }
 
   if (tc.name === 'Write' && path) {
     fileOps.push({ path, type: 'create', agentId, timestamp: tc.timestamp, toolCallId: tc.id })
+  }
+
+  if (tc.name === 'Delete' && path) {
+    fileOps.push({ path, type: 'delete', agentId, timestamp: tc.timestamp, toolCallId: tc.id })
   }
 
   if ((tc.name === 'StrReplace' || tc.name === 'EditNotebook') && path) {

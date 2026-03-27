@@ -185,6 +185,88 @@ function buildCodexSummary(
     agentCount: 1,
     tokenUsage: totalUsage,
     filePath,
+    hasToolData: true,
+  }
+}
+
+function isSkillPath(path: string): boolean {
+  return /SKILL\.md$/i.test(path) || /\/skills\//.test(path)
+}
+
+function isRulePath(path: string): boolean {
+  return (
+    /\.cursor\/rules\//.test(path) ||
+    /\.cursorrules$/i.test(path) ||
+    /CLAUDE\.md$/i.test(path) ||
+    /AGENTS\.md$/i.test(path) ||
+    /\.claude\/settings/i.test(path) ||
+    /rules\/.*\.mdc?$/i.test(path)
+  )
+}
+
+function processCodexToolCall(
+  tc: ToolCall,
+  ts: string,
+  fileOps: FileOp[],
+  skillHits: SkillHit[],
+  mcpCalls: McpCall[],
+  ruleRefs: RuleRef[],
+) {
+  const path = (tc.input.path ?? tc.input.file_path) as string | undefined
+
+  if (tc.name === 'exec_command' || tc.name === 'shell') {
+    const cmd = (tc.input.cmd ?? tc.input.command ?? '') as string
+
+    const sedRead = cmd.match(/sed\s+-n\s+'[^']+'\s+(\/\S+)/)
+    if (sedRead) {
+      const filePath = sedRead[1]
+      fileOps.push({ path: filePath, type: 'read', agentId: 'main', timestamp: ts, toolCallId: tc.id })
+      if (isSkillPath(filePath)) {
+        const name = filePath.split('/').slice(-2).join('/')
+        skillHits.push({ name, fullPath: filePath, agentId: 'main', timestamp: ts, toolCallId: tc.id })
+      } else if (isRulePath(filePath)) {
+        ruleRefs.push({ path: filePath, agentId: 'main', timestamp: ts })
+      }
+    } else if (cmd.match(/\bcat\s+/)) {
+      const catMatch = cmd.match(/\bcat\s+['"]?([^\s'"]+)/)
+      if (catMatch) {
+        fileOps.push({ path: catMatch[1], type: 'read', agentId: 'main', timestamp: ts, toolCallId: tc.id })
+      }
+    } else if (cmd.match(/\bsed\s+-i/)) {
+      const sedWrite = cmd.match(/\bsed\s+-i[^']*\s+'[^']+'\s+(\/\S+)/)
+      if (sedWrite) {
+        fileOps.push({ path: sedWrite[1], type: 'update', agentId: 'main', timestamp: ts, toolCallId: tc.id })
+      }
+    }
+  }
+
+  if (tc.name === 'apply_patch' && path) {
+    fileOps.push({ path, type: 'update', agentId: 'main', timestamp: ts, toolCallId: tc.id })
+  }
+
+  if (tc.name === 'read_file' && path) {
+    fileOps.push({ path, type: 'read', agentId: 'main', timestamp: ts, toolCallId: tc.id })
+    if (isSkillPath(path)) {
+      const name = path.split('/').slice(-2).join('/')
+      skillHits.push({ name, fullPath: path, agentId: 'main', timestamp: ts, toolCallId: tc.id })
+    } else if (isRulePath(path)) {
+      ruleRefs.push({ path, agentId: 'main', timestamp: ts })
+    }
+  }
+
+  if (tc.name === 'write_file' && path) {
+    fileOps.push({ path, type: 'create', agentId: 'main', timestamp: ts, toolCallId: tc.id })
+  }
+
+  if (tc.name === 'call_mcp_tool' || tc.name === 'CallMcpTool') {
+    mcpCalls.push({
+      server: (tc.input.server ?? '') as string,
+      toolName: (tc.input.toolName ?? tc.input.tool_name ?? '') as string,
+      arguments: tc.input.arguments as Record<string, unknown> | undefined,
+      agentId: 'main',
+      timestamp: ts,
+      toolCallId: tc.id,
+    })
   }
 }
 
@@ -269,34 +351,7 @@ export async function parseCodexSession(filePath: string): Promise<Session> {
           timestamp: ts,
         })
 
-        if (funcName === 'exec_command' || funcName === 'shell') {
-          const cmd = (input.cmd ?? input.command ?? '') as string
-          if (cmd.includes('cat ') || cmd.includes('sed ')) {
-            const pathMatch = cmd.match(/'([^']+)'/)
-            if (pathMatch) {
-              fileOps.push({
-                path: pathMatch[1],
-                type: cmd.includes('sed ') ? 'update' : 'read',
-                agentId: 'main',
-                timestamp: ts,
-                toolCallId: tc.id,
-              })
-            }
-          }
-        }
-
-        if (funcName === 'apply_patch') {
-          const patchPath = (input.path ?? '') as string
-          if (patchPath) {
-            fileOps.push({
-              path: patchPath,
-              type: 'update',
-              agentId: 'main',
-              timestamp: ts,
-              toolCallId: tc.id,
-            })
-          }
-        }
+        processCodexToolCall(tc, ts, fileOps, skillHits, mcpCalls, ruleRefs)
       }
 
       if (payload.type === 'function_call_output') {

@@ -23,6 +23,7 @@ export interface SessionSummary {
   agentCount: number
   tokenUsage: TokenUsage
   filePath: string
+  hasToolData: boolean
 }
 
 export interface Session {
@@ -162,9 +163,9 @@ export function addTokenUsage(a: TokenUsage, b: TokenUsage): TokenUsage {
 }
 
 export function categorizeToolCall(name: string): ToolCategory {
-  const fileRead = ['Read', 'Grep', 'Glob', 'SemanticSearch', 'ReadLints']
-  const fileWrite = ['Write', 'StrReplace', 'Delete', 'EditNotebook']
-  const shell = ['Shell']
+  const fileRead = ['Read', 'Grep', 'Glob', 'SemanticSearch', 'ReadLints', 'read_file']
+  const fileWrite = ['Write', 'StrReplace', 'Delete', 'EditNotebook', 'write_file', 'apply_patch']
+  const shell = ['Shell', 'exec_command']
   const search = ['WebSearch', 'WebFetch']
   const skill = ['Skill']
   const agent = ['Task']

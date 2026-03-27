@@ -78,9 +78,15 @@ function SessionCard({
       </div>
       <div className="flex items-center gap-4 mt-2 text-[11px] text-zinc-500">
         <span>{session.turnCount} turns</span>
-        <span>{session.toolCallCount} tools</span>
-        <span>{session.fileOpCount} files</span>
-        {session.agentCount > 1 && <span>{session.agentCount} agents</span>}
+        {session.hasToolData ? (
+          <>
+            <span>{session.toolCallCount} tools</span>
+            <span>{session.fileOpCount} files</span>
+            {session.agentCount > 1 && <span>{session.agentCount} agents</span>}
+          </>
+        ) : (
+          <span className="text-zinc-600 italic">tool data unavailable</span>
+        )}
         {session.tokenUsage.totalTokens > 0 && (
           <span>{formatTokens(session.tokenUsage.totalTokens)}</span>
         )}

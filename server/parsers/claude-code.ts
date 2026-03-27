@@ -192,6 +192,7 @@ function buildClaudeSessionSummary(
     agentCount: 1 + agentResults.length,
     tokenUsage: totalTokens,
     filePath,
+    hasToolData: true,
   }
 }
 
@@ -359,6 +360,21 @@ export async function parseClaudeCodeSession(filePath: string): Promise<Session>
   }
 }
 
+function isSkillPath(path: string): boolean {
+  return /SKILL\.md$/i.test(path) || /\/skills\//.test(path)
+}
+
+function isRulePath(path: string): boolean {
+  return (
+    /\.cursor\/rules\//.test(path) ||
+    /\.cursorrules$/i.test(path) ||
+    /CLAUDE\.md$/i.test(path) ||
+    /AGENTS\.md$/i.test(path) ||
+    /\.claude\/settings/i.test(path) ||
+    /rules\/.*\.mdc?$/i.test(path)
+  )
+}
+
 function processToolCall(
   tc: ToolCall,
   agentId: string,
@@ -369,29 +385,28 @@ function processToolCall(
   ruleRefs: RuleRef[],
 ) {
   const ts = safeTimestamp(timestamp)
+  const path = (tc.input.file_path ?? tc.input.path) as string | undefined
 
-  if (tc.name === 'Read') {
-    const path = (tc.input.file_path ?? tc.input.path) as string | undefined
-    if (path) {
-      fileOps.push({ path, type: 'read', agentId, timestamp: ts, toolCallId: tc.id })
-      if (path.includes('.cursor/rules/') || path.includes('CLAUDE.md') || path.includes('AGENTS.md')) {
-        ruleRefs.push({ path, agentId, timestamp: ts })
-      }
+  if (tc.category === 'file_read' && path) {
+    fileOps.push({ path, type: 'read', agentId, timestamp: ts, toolCallId: tc.id })
+    if (isSkillPath(path)) {
+      const name = path.split('/').slice(-2).join('/')
+      skillHits.push({ name, fullPath: path, agentId, timestamp: ts, toolCallId: tc.id })
+    } else if (isRulePath(path)) {
+      ruleRefs.push({ path, agentId, timestamp: ts })
     }
   }
 
-  if (tc.name === 'Write') {
-    const path = (tc.input.file_path ?? tc.input.path) as string | undefined
-    if (path) {
-      fileOps.push({ path, type: 'create', agentId, timestamp: ts, toolCallId: tc.id })
-    }
+  if (tc.name === 'Write' && path) {
+    fileOps.push({ path, type: 'create', agentId, timestamp: ts, toolCallId: tc.id })
   }
 
-  if (tc.name === 'StrReplace' || tc.name === 'EditNotebook') {
-    const path = (tc.input.file_path ?? tc.input.path) as string | undefined
-    if (path) {
-      fileOps.push({ path, type: 'update', agentId, timestamp: ts, toolCallId: tc.id })
-    }
+  if (tc.name === 'Delete' && path) {
+    fileOps.push({ path, type: 'delete', agentId, timestamp: ts, toolCallId: tc.id })
+  }
+
+  if ((tc.name === 'StrReplace' || tc.name === 'EditNotebook') && path) {
+    fileOps.push({ path, type: 'update', agentId, timestamp: ts, toolCallId: tc.id })
   }
 
   if (tc.name === 'Skill') {

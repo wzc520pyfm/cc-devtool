@@ -51,8 +51,8 @@ Core types in `shared/types.ts`:
 - **SessionSummary** — lightweight list item with counts and filePath
 - **Turn** — one user/assistant/system message with ContentBlock[]
 - **ContentBlock** — text | thinking | tool_use | tool_result
-- **ToolCall** — name, category (file_op/search/shell/mcp/agent/other), input, output
-- **FileOp** — path, operation (read/write/create), timestamp
+- **ToolCall** — name, category (file_read/file_write/shell/search/skill/mcp/agent/other), input, output
+- **FileOp** — path, operation (read/create/update/delete), timestamp
 - **AgentNode** — id, parentId, model, name (for agent hierarchy graph)
 - **SkillHit / McpCall / RuleRef** — extracted metadata for dashboard stats
 
@@ -87,7 +87,7 @@ Session list cache is invalidated on file change (via watcher).
 - **Timeline** — chronological turns with role icons, thinking badges, token counts, expandable tool_use blocks
 - **File Impact** — grouped by operation type (read/write/create), file paths with timestamps
 - **Agent Graph** — @xyflow/react graph of agent hierarchy (main → subagents)
-- **Dashboard** — recharts: summary cards (tool calls, skills, MCP, tokens), pie chart (tool distribution), bar chart (category breakdown), line chart (token over time)
+- **Dashboard** — recharts: 6 stat cards (tool calls, files read, files written, shell cmds, skills, rules), bar chart (tool distribution), pie chart (category breakdown), token breakdown (input/output/cache split with ratio bar), stacked area chart (token over time), shell commands list (expandable with output), skills invoked list (with full paths), rules referenced list, MCP calls list
 
 ## Usage
 
@@ -153,6 +153,16 @@ ws.onmessage = e => console.log(JSON.parse(e.data))
 ```bash
 npx tsc --noEmit   # Type-check without emitting
 ```
+
+## Skill / Rule / Shell Detection
+
+All parsers use shared path-matching logic:
+
+- **Skills**: Detected when a `Read` tool targets a path matching `SKILL.md` or containing `/skills/`. The skill name is extracted as the last 2 path segments (e.g., `sync-react-to-vue/SKILL.md`). Claude Code also detects the native `Skill` tool.
+- **Rules**: Detected when a `Read` tool targets `.cursor/rules/`, `.cursorrules`, `CLAUDE.md`, `AGENTS.md`, `.claude/settings`, or `rules/*.md` / `rules/*.mdc`. Note: Cursor injects rules into the system prompt silently — they won't appear as explicit Read calls.
+- **Shell commands**: All `Shell` tool calls. Command text and description are extracted from tool input. Results are shown when expanded.
+- **MCP calls**: `CallMcpTool` / `call_mcp_tool` with server name and tool name.
+- **Token usage**: Claude Code provides per-turn token breakdowns (input/output/cache). Cursor transcripts don't include token data. Codex provides total session token counts.
 
 ## Common Pitfalls
 
