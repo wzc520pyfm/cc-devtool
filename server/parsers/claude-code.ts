@@ -19,6 +19,7 @@ import type {
   McpCall,
   RuleRef,
   TokenUsage,
+  DataAvailability,
 } from './types.js'
 
 const CLAUDE_DIR = join(homedir(), '.claude')
@@ -192,7 +193,17 @@ function buildClaudeSessionSummary(
     agentCount: 1 + agentResults.length,
     tokenUsage: totalTokens,
     filePath,
-    hasToolData: true,
+    hasToolData: toolCallCount > 0 || totalTokens.totalTokens > 0,
+    dataAvailability: {
+      toolCalls: toolCallCount > 0 ? 'full' : 'none',
+      tokenUsage: totalTokens.totalTokens > 0 ? 'full' : 'none',
+      fileOps: toolCallCount > 0 ? 'full' : 'none',
+      reason: toolCallCount === 0 && totalTokens.totalTokens > 0
+        ? 'Chat-only session (no tool usage)'
+        : toolCallCount === 0
+          ? 'No coding activity in this session'
+          : undefined,
+    },
   }
 }
 

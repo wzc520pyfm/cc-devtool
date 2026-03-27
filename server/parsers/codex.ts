@@ -19,6 +19,7 @@ import type {
   McpCall,
   RuleRef,
   TokenUsage,
+  DataAvailability,
 } from './types.js'
 
 const CODEX_DIR = join(homedir(), '.codex')
@@ -138,6 +139,7 @@ function buildCodexSummary(
 
   let totalUsage = emptyTokenUsage()
   let toolCallCount = 0
+  const filePathsSet = new Set<string>()
 
   for (const rec of records) {
     if (rec.type === 'event_msg' && rec.payload?.type === 'token_count') {
@@ -154,6 +156,20 @@ function buildCodexSummary(
     }
     if (rec.type === 'response_item' && rec.payload?.type === 'function_call') {
       toolCallCount++
+      const funcName = rec.payload.name ?? ''
+      let input: Record<string, unknown> = {}
+      try { input = JSON.parse(rec.payload.arguments ?? '{}') } catch { /* */ }
+
+      const filePath = (input.path ?? input.file_path) as string | undefined
+      if (filePath) filePathsSet.add(filePath)
+
+      if (funcName === 'exec_command' || funcName === 'shell') {
+        const cmd = (input.cmd ?? input.command ?? '') as string
+        const sedMatch = cmd.match(/sed\s+-n\s+'[^']+'\s+(\/\S+)/)
+        const catMatch = cmd.match(/\bcat\s+['"]?([^\s'"]+)/)
+        if (sedMatch) filePathsSet.add(sedMatch[1])
+        else if (catMatch) filePathsSet.add(catMatch[1])
+      }
     }
   }
 
@@ -181,11 +197,16 @@ function buildCodexSummary(
     model,
     turnCount: userMessages.length + assistantMessages.length,
     toolCallCount,
-    fileOpCount: 0,
+    fileOpCount: filePathsSet.size,
     agentCount: 1,
     tokenUsage: totalUsage,
     filePath,
     hasToolData: true,
+    dataAvailability: {
+      toolCalls: 'full',
+      tokenUsage: totalUsage.totalTokens > 0 ? 'full' : 'none',
+      fileOps: 'full',
+    },
   }
 }
 

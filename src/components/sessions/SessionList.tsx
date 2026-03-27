@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { useFilteredSessions } from '../../stores/sessionStore'
-import type { SessionSummary } from '@shared/types'
+import type { SessionSummary, DataAvailability } from '@shared/types'
 
 const toolConfig: Record<string, { color: string; bg: string; border: string }> = {
   'claude-code': { color: 'text-amber-400', bg: 'bg-amber-500/10', border: 'border-amber-500/30' },
@@ -91,7 +91,42 @@ function SessionCard({
           <span>{formatTokens(session.tokenUsage.totalTokens)}</span>
         )}
       </div>
+      {session.dataAvailability && (
+        <DataAvailabilityBar availability={session.dataAvailability} />
+      )}
     </button>
+  )
+}
+
+const availabilityColor = {
+  full: 'bg-emerald-400',
+  partial: 'bg-yellow-400',
+  none: 'bg-zinc-700',
+} as const
+
+function DataAvailabilityBar({ availability }: { availability: DataAvailability }) {
+  const dims = [
+    { key: 'toolCalls' as const, label: 'Tools' },
+    { key: 'tokenUsage' as const, label: 'Tokens' },
+    { key: 'fileOps' as const, label: 'Files' },
+  ]
+  const allFull = dims.every((d) => availability[d.key] === 'full')
+  if (allFull) return null
+
+  return (
+    <div className="mt-2 flex items-center gap-2">
+      <div className="flex gap-1">
+        {dims.map((d) => (
+          <div key={d.key} className="flex items-center gap-0.5" title={`${d.label}: ${availability[d.key]}`}>
+            <span className={`w-1.5 h-1.5 rounded-full ${availabilityColor[availability[d.key]]}`} />
+            <span className="text-[9px] text-zinc-600">{d.label}</span>
+          </div>
+        ))}
+      </div>
+      {availability.reason && (
+        <span className="text-[9px] text-zinc-600 italic truncate">{availability.reason}</span>
+      )}
+    </div>
   )
 }
 

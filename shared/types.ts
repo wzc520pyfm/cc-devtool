@@ -8,6 +8,13 @@ export interface TokenUsage {
   totalTokens: number
 }
 
+export interface DataAvailability {
+  toolCalls: 'full' | 'partial' | 'none'
+  tokenUsage: 'full' | 'partial' | 'none'
+  fileOps: 'full' | 'partial' | 'none'
+  reason?: string
+}
+
 export interface SessionSummary {
   id: string
   tool: ToolSource
@@ -24,6 +31,7 @@ export interface SessionSummary {
   tokenUsage: TokenUsage
   filePath: string
   hasToolData: boolean
+  dataAvailability?: DataAvailability
 }
 
 export interface Session {

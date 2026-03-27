@@ -17,6 +17,7 @@ import type {
   SkillHit,
   McpCall,
   RuleRef,
+  DataAvailability,
 } from './types.js'
 
 const CURSOR_DIR = join(homedir(), '.cursor')
@@ -121,6 +122,12 @@ async function buildCursorSummary(
     tokenUsage: emptyTokenUsage(),
     filePath,
     hasToolData: false,
+    dataAvailability: {
+      toolCalls: 'none',
+      tokenUsage: 'none',
+      fileOps: 'none',
+      reason: 'JSONL index format — tool call details not stored',
+    },
   }
 }
 
@@ -163,6 +170,12 @@ async function buildCursorTxtSummary(
       tokenUsage: emptyTokenUsage(),
       filePath,
       hasToolData: true,
+      dataAvailability: {
+        toolCalls: 'full',
+        tokenUsage: 'none',
+        fileOps: 'full',
+        reason: 'Token usage not available in Cursor transcript format',
+      },
     }
   } catch {
     return null

@@ -103,8 +103,39 @@ export default function ToolDashboard({ session }: Props) {
 
   const { totalTokens, inputTokens, outputTokens, cacheReadTokens, cacheCreationTokens } = session.tokenUsage
 
+  const hasAnyToolData = allToolCalls.length > 0 || session.fileOps.length > 0
+  const hasTokenData = totalTokens > 0
+
   return (
     <div className="p-4 space-y-6">
+      {/* Data availability notice */}
+      {(!hasAnyToolData || !hasTokenData) && (
+        <div className="border border-zinc-800 rounded-lg p-3 bg-zinc-900/50">
+          <div className="flex items-start gap-2">
+            <span className="text-zinc-600 text-sm mt-0.5">ℹ</span>
+            <div className="text-xs text-zinc-500 space-y-0.5">
+              {!hasAnyToolData && !hasTokenData && (
+                <p>
+                  {session.tool === 'cursor'
+                    ? 'This session uses JSONL index format — tool call details are not stored in this format.'
+                    : 'No tool usage or token data found in this session.'}
+                </p>
+              )}
+              {hasAnyToolData && !hasTokenData && (
+                <p>
+                  {session.tool === 'cursor'
+                    ? 'Token usage data is not available in Cursor transcript format.'
+                    : 'No token usage data found in this session.'}
+                </p>
+              )}
+              <p className="text-zinc-600">
+                Data availability: {session.tool === 'codex' ? 'Tools ✓ Tokens ✓ Files ✓' : session.tool === 'cursor' ? 'Tools ✓ Tokens ✗ Files ✓' : 'Depends on session activity'}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Stats Grid */}
       <div className="grid grid-cols-6 gap-3">
         <StatCard label="Tool Calls" value={allToolCalls.length} />
