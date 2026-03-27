@@ -19,6 +19,7 @@ import type {
   RuleRef,
   DataAvailability,
 } from './types.js'
+import { enrichCursorSummary } from './cursor-db.js'
 
 const CURSOR_DIR = join(homedir(), '.cursor')
 
@@ -72,7 +73,7 @@ export async function listCursorSessions(): Promise<SessionSummary[]> {
     }
   } catch { /* cursor dir may not exist */ }
 
-  return [...sessionMap.values()]
+  return [...sessionMap.values()].map(enrichCursorSummary)
 }
 
 async function buildCursorSummary(

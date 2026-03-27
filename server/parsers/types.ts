@@ -16,6 +16,10 @@ export type {
   RuleRef,
   TokenUsage,
   ToolSource,
+  DataAvailability,
+  CodeStats,
+  GitContext,
+  RawFileResponse,
 } from '../../shared/types.js'
 
 export {

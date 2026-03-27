@@ -21,6 +21,7 @@ import type {
   TokenUsage,
   DataAvailability,
 } from './types.js'
+import { enrichCodexSummary } from './codex-db.js'
 
 const CODEX_DIR = join(homedir(), '.codex')
 
@@ -96,7 +97,7 @@ export async function listCodexSessions(): Promise<SessionSummary[]> {
       try {
         const records = (await readJsonlFile(sessionFile)) as CodexRecord[]
         const summary = buildCodexSummary(entry, sessionFile, records)
-        if (summary) summaries.push(summary)
+        if (summary) summaries.push(enrichCodexSummary(summary))
       } catch { /* skip */ }
     }
   } catch { /* codex dir may not exist */ }

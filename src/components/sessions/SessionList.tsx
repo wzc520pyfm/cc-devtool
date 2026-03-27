@@ -90,6 +90,12 @@ function SessionCard({
         {session.tokenUsage.totalTokens > 0 && (
           <span>{formatTokens(session.tokenUsage.totalTokens)}</span>
         )}
+        {session.codeStats && (
+          <span className="text-cyan-400/60">{session.codeStats.uniqueFiles} code files</span>
+        )}
+        {session.gitContext?.branch && (
+          <span className="text-zinc-600 font-mono">{session.gitContext.branch}</span>
+        )}
       </div>
       {session.dataAvailability && (
         <DataAvailabilityBar availability={session.dataAvailability} />

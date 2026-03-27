@@ -5,13 +5,16 @@ import Timeline from '../components/timeline/Timeline'
 import FileImpactView from '../components/file-impact/FileImpactView'
 import AgentGraph from '../components/agent-graph/AgentGraph'
 import ToolDashboard from '../components/dashboard/ToolDashboard'
-import type { Session } from '@shared/types'
+import RawFileViewer from '../components/raw/RawFileViewer'
+import { api } from '../lib/api'
+import type { Session, RawFileResponse } from '@shared/types'
 
 const tabs = [
   { id: 'timeline', label: 'Timeline' },
   { id: 'files', label: 'File Impact' },
   { id: 'agents', label: 'Agent Graph' },
   { id: 'dashboard', label: 'Dashboard' },
+  { id: 'raw', label: 'Raw' },
 ] as const
 
 type TabId = (typeof tabs)[number]['id']
@@ -21,18 +24,26 @@ export default function SessionDetailPage() {
   const [activeTab, setActiveTab] = useState<TabId>('timeline')
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
+  const [rawData, setRawData] = useState<RawFileResponse | null>(null)
+  const [drawerOpen, setDrawerOpen] = useState(false)
   const { fetchSessionDetail } = useSessionStore()
 
   useEffect(() => {
     if (tool && id) {
       setLoading(true)
       setActiveTab('timeline')
+      setRawData(null)
       fetchSessionDetail(tool, id).then((s) => {
         setSession(s)
         setLoading(false)
       })
     }
   }, [tool, id, fetchSessionDetail])
+
+  const loadRaw = () => {
+    if (rawData || !tool || !id) return
+    api.getRawFile(tool, id).then(setRawData).catch(() => {})
+  }
 
   if (loading) {
     return (
@@ -84,6 +95,13 @@ export default function SessionDetailPage() {
               {session.model}
             </span>
           )}
+          <button
+            onClick={() => { loadRaw(); setDrawerOpen(true) }}
+            className="text-xs text-zinc-600 hover:text-zinc-300 font-mono bg-zinc-800/50 hover:bg-zinc-700/50 px-2 py-0.5 rounded transition-colors"
+            title="View raw file"
+          >
+            {'</>'}
+          </button>
         </div>
         <div className="flex items-center gap-4 mt-2 text-xs text-zinc-500">
           <span>{new Date(session.startTime).toLocaleString()}</span>
@@ -112,7 +130,10 @@ export default function SessionDetailPage() {
         {tabs.map((tab) => (
           <button
             key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
+            onClick={() => {
+              setActiveTab(tab.id)
+              if (tab.id === 'raw') loadRaw()
+            }}
             className={`px-4 py-2.5 text-sm font-medium transition-colors border-b-2 ${
               activeTab === tab.id
                 ? 'border-indigo-500 text-zinc-100'
@@ -129,7 +150,25 @@ export default function SessionDetailPage() {
         {activeTab === 'files' && <FileImpactView session={session} />}
         {activeTab === 'agents' && <AgentGraph session={session} />}
         {activeTab === 'dashboard' && <ToolDashboard session={session} />}
+        {activeTab === 'raw' && (
+          rawData ? <RawFileViewer data={rawData} /> : <div className="flex items-center justify-center h-full text-zinc-500">Loading raw file...</div>
+        )}
       </div>
+
+      {drawerOpen && (
+        <div className="fixed inset-0 z-50 flex justify-end">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setDrawerOpen(false)} />
+          <div className="relative w-[55vw] max-w-4xl bg-zinc-900 border-l border-zinc-800 shadow-2xl flex flex-col">
+            <div className="flex items-center justify-between p-3 border-b border-zinc-800 shrink-0">
+              <span className="text-sm font-medium text-zinc-300">Raw File</span>
+              <button onClick={() => setDrawerOpen(false)} className="text-zinc-500 hover:text-zinc-300 text-lg px-2">&times;</button>
+            </div>
+            <div className="flex-1 overflow-hidden">
+              {rawData ? <RawFileViewer data={rawData} /> : <div className="flex items-center justify-center h-full text-zinc-500">Loading...</div>}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

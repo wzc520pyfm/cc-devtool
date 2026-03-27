@@ -1,4 +1,4 @@
-import type { SessionSummary, Session } from '@shared/types'
+import type { SessionSummary, Session, RawFileResponse } from '@shared/types'
 
 const BASE = '/api'
 
@@ -12,4 +12,6 @@ export const api = {
   getSessions: () => fetchJSON<SessionSummary[]>('/sessions'),
   getSessionDetail: (tool: string, id: string) =>
     fetchJSON<Session>(`/sessions/${tool}/${encodeURIComponent(id)}`),
+  getRawFile: (tool: string, id: string) =>
+    fetchJSON<RawFileResponse>(`/sessions/${tool}/${encodeURIComponent(id)}/raw`),
 }

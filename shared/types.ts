@@ -32,6 +32,8 @@ export interface SessionSummary {
   filePath: string
   hasToolData: boolean
   dataAvailability?: DataAvailability
+  codeStats?: CodeStats
+  gitContext?: GitContext
 }
 
 export interface Session {
@@ -148,6 +150,25 @@ export interface RuleRef {
   path: string
   agentId: string
   timestamp: string
+}
+
+export interface RawFileResponse {
+  content: string
+  filePath: string
+  format: 'jsonl' | 'txt'
+  size: number
+}
+
+export interface CodeStats {
+  codeBlocks: number
+  uniqueFiles: number
+  aiPercentage?: number
+}
+
+export interface GitContext {
+  branch?: string
+  sha?: string
+  originUrl?: string
 }
 
 export function emptyTokenUsage(): TokenUsage {

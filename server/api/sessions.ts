@@ -1,4 +1,5 @@
 import { Router } from 'express'
+import { readFile, stat } from 'fs/promises'
 import { listAllSessions, detectTools } from '../parsers/detect.js'
 import { parseClaudeCodeSession } from '../parsers/claude-code.js'
 import { parseCursorSession } from '../parsers/cursor.js'
@@ -58,6 +59,41 @@ sessionsRouter.get('/sessions/:tool/:id', async (req, res) => {
   } catch (err) {
     console.error('Error parsing session:', err)
     res.status(500).json({ error: 'Failed to parse session' })
+  }
+})
+
+sessionsRouter.get('/sessions/:tool/:id/raw', async (req, res) => {
+  try {
+    const { tool, id } = req.params
+    const sessions = cachedSessions ?? (await listAllSessions())
+    const session = sessions.find(
+      (s) => s.tool === tool && s.id === id,
+    )
+
+    if (!session) {
+      res.status(404).json({ error: 'Session not found' })
+      return
+    }
+
+    const filePath = session.filePath
+    const fileStat = await stat(filePath).catch(() => null)
+    if (!fileStat) {
+      res.status(404).json({ error: 'Raw file not found' })
+      return
+    }
+
+    const content = await readFile(filePath, 'utf-8')
+    const format = filePath.endsWith('.txt') ? 'txt' : 'jsonl'
+
+    res.json({
+      content,
+      filePath,
+      format,
+      size: fileStat.size,
+    })
+  } catch (err) {
+    console.error('Error reading raw file:', err)
+    res.status(500).json({ error: 'Failed to read raw file' })
   }
 })
 
