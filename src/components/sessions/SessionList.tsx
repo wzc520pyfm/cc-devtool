@@ -62,6 +62,9 @@ function SessionCard({
                 Active
               </span>
             )}
+            {session.dataSource && session.dataSource !== 'local' && (
+              <DataSourceBadge source={session.dataSource} />
+            )}
             {session.model && (
               <span className="text-[10px] text-zinc-600">{session.model}</span>
             )}
@@ -154,4 +157,18 @@ function formatTokens(n: number): string {
   if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M tokens`
   if (n >= 1_000) return `${(n / 1_000).toFixed(1)}K tokens`
   return `${n} tokens`
+}
+
+const sourceConfig = {
+  proxy: { label: 'proxy', color: 'text-rose-400 bg-rose-500/10 border-rose-500/30' },
+  'local+proxy': { label: 'local+proxy', color: 'text-teal-400 bg-teal-500/10 border-teal-500/30' },
+} as const
+
+function DataSourceBadge({ source }: { source: 'proxy' | 'local+proxy' }) {
+  const cfg = sourceConfig[source]
+  return (
+    <span className={`px-1.5 py-0.5 text-[9px] font-medium rounded border ${cfg.color}`}>
+      {cfg.label}
+    </span>
+  )
 }

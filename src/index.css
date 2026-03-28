@@ -30,3 +30,36 @@ body {
   scrollbar-width: thin;
   scrollbar-color: var(--color-surface-3) transparent;
 }
+
+/* React Flow attribution badge dark mode */
+.react-flow__attribution {
+  background: rgba(9, 9, 11, 0.8) !important;
+  color: #52525b !important;
+}
+
+.react-flow__attribution a {
+  color: #71717a !important;
+}
+
+/* React Flow controls dark mode */
+.react-flow__controls-button {
+  background: #18181b !important;
+  border-color: #3f3f46 !important;
+  fill: #a1a1aa !important;
+  color: #a1a1aa !important;
+}
+
+.react-flow__controls-button:hover {
+  background: #27272a !important;
+}
+
+/* Recharts tooltip cursor dark mode */
+.recharts-tooltip-cursor {
+  fill: rgba(255, 255, 255, 0.04) !important;
+  stroke: none !important;
+}
+
+/* Recharts legend text */
+.recharts-legend-item-text {
+  color: #a1a1aa !important;
+}

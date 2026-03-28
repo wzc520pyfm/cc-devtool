@@ -12,6 +12,7 @@ export function setupWatcher(_wss: WebSocketServer) {
     join(home, '.claude', 'projects'),
     join(home, '.cursor', 'projects'),
     join(home, '.codex', 'sessions'),
+    join(home, '.cc-devtool', 'captures'),
   ]
 
   const sqlitePaths = [

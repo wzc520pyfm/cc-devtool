@@ -342,7 +342,7 @@ export async function parseClaudeCodeSession(filePath: string): Promise<Session>
         id: rec.uuid ?? genId(),
         agentId: 'main',
         role: 'system',
-        blocks: [{ type: 'text', text: rec.content as string ?? '' }],
+        blocks: [{ type: 'text', text: (rec.message?.content as string) ?? '' }],
         timestamp: safeTimestamp(rec.timestamp),
       })
     }

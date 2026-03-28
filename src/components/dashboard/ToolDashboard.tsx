@@ -114,14 +114,19 @@ export default function ToolDashboard({ session }: Props) {
           <div className="flex items-start gap-2">
             <span className="text-zinc-600 text-sm mt-0.5">ℹ</span>
             <div className="text-xs text-zinc-500 space-y-0.5">
-              {!hasAnyToolData && !hasTokenData && (
+              {session.id.startsWith('proxy-') && (
+                <p className="text-rose-400/80">
+                  Data source: API proxy capture — token usage available, tool-level detail may be limited.
+                </p>
+              )}
+              {!hasAnyToolData && !hasTokenData && !session.id.startsWith('proxy-') && (
                 <p>
                   {session.tool === 'cursor'
                     ? 'Cursor JSONL format does not record tool calls or tokens. File operations are recovered from AI tracking database.'
                     : 'No tool usage or token data found in this session.'}
                 </p>
               )}
-              {hasAnyToolData && !hasTokenData && (
+              {hasAnyToolData && !hasTokenData && !session.id.startsWith('proxy-') && (
                 <p>
                   {session.tool === 'cursor'
                     ? 'Token usage is not tracked in Cursor transcripts. File data enriched from AI tracking database.'
@@ -193,9 +198,9 @@ export default function ToolDashboard({ session }: Props) {
           <h3 className="text-sm font-semibold text-zinc-300 mb-3">Tool Usage Distribution</h3>
           <ResponsiveContainer width="100%" height={250}>
             <BarChart data={barData}>
-              <XAxis dataKey="name" tick={{ fill: '#71717a', fontSize: 11 }} axisLine={false} />
-              <YAxis tick={{ fill: '#71717a', fontSize: 11 }} axisLine={false} />
-              <Tooltip contentStyle={tooltipStyle} />
+              <XAxis dataKey="name" tick={{ fill: '#71717a', fontSize: 11 }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fill: '#71717a', fontSize: 11 }} axisLine={false} tickLine={false} allowDecimals={false} />
+              <Tooltip contentStyle={tooltipStyle} cursor={{ fill: 'rgba(255,255,255,0.04)' }} />
               <Bar dataKey="count" radius={[4, 4, 0, 0]}>
                 {barData.map((entry, i) => (
                   <Cell key={i} fill={entry.fill} />
@@ -242,10 +247,10 @@ export default function ToolDashboard({ session }: Props) {
           <h3 className="text-sm font-semibold text-zinc-300 mb-3">Token Usage Over Time</h3>
           <ResponsiveContainer width="100%" height={220}>
             <AreaChart data={cumulativeData}>
-              <XAxis dataKey="turn" tick={{ fill: '#71717a', fontSize: 11 }} axisLine={false} />
-              <YAxis tick={{ fill: '#71717a', fontSize: 11 }} axisLine={false} />
-              <Tooltip contentStyle={tooltipStyle} />
-              <Legend wrapperStyle={{ fontSize: 11 }} />
+              <XAxis dataKey="turn" tick={{ fill: '#71717a', fontSize: 11 }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fill: '#71717a', fontSize: 11 }} axisLine={false} tickLine={false} />
+              <Tooltip contentStyle={tooltipStyle} cursor={{ stroke: '#3f3f46' }} />
+              <Legend wrapperStyle={{ fontSize: 11, color: '#a1a1aa' }} />
               <Area type="monotone" dataKey="input" stackId="1" stroke="#38bdf8" fill="#38bdf8" fillOpacity={0.3} name="Input" />
               <Area type="monotone" dataKey="output" stackId="1" stroke="#34d399" fill="#34d399" fillOpacity={0.3} name="Output" />
               <Area type="monotone" dataKey="cache" stackId="1" stroke="#a78bfa" fill="#a78bfa" fillOpacity={0.3} name="Cache" />

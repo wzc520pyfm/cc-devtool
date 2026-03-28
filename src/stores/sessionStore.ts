@@ -4,6 +4,7 @@ import { api } from '../lib/api'
 
 interface Filters {
   tool: ToolSource | 'all'
+  source: 'all' | 'local' | 'proxy'
   search: string
 }
 
@@ -18,7 +19,7 @@ interface SessionStore {
 
 export const useSessionStore = create<SessionStore>((set) => ({
   sessions: [],
-  filters: { tool: 'all', search: '' },
+  filters: { tool: 'all', source: 'all', search: '' },
   loading: false,
 
   setFilters: (partial) =>
@@ -49,6 +50,11 @@ export function useFilteredSessions(): SessionSummary[] {
 
   return sessions.filter((s) => {
     if (filters.tool !== 'all' && s.tool !== filters.tool) return false
+    if (filters.source !== 'all') {
+      const src = s.dataSource ?? 'local'
+      if (filters.source === 'proxy' && src !== 'proxy' && src !== 'local+proxy') return false
+      if (filters.source === 'local' && src === 'proxy') return false
+    }
     if (
       filters.search &&
       !s.title.toLowerCase().includes(filters.search.toLowerCase()) &&

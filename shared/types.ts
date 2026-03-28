@@ -34,6 +34,7 @@ export interface SessionSummary {
   dataAvailability?: DataAvailability
   codeStats?: CodeStats
   gitContext?: GitContext
+  dataSource?: 'local' | 'proxy' | 'local+proxy'
 }
 
 export interface Session {

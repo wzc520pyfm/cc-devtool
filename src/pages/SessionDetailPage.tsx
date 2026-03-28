@@ -87,6 +87,11 @@ export default function SessionDetailPage() {
           >
             {session.tool}
           </span>
+          {session.id.startsWith('proxy-') && (
+            <span className="px-1.5 py-0.5 text-[9px] font-medium rounded border text-rose-400 bg-rose-500/10 border-rose-500/30">
+              proxy
+            </span>
+          )}
           <h2 className="text-lg font-semibold truncate flex-1">
             {session.title || session.project}
           </h2>

@@ -4,6 +4,7 @@ import { listAllSessions, detectTools } from '../parsers/detect.js'
 import { parseClaudeCodeSession } from '../parsers/claude-code.js'
 import { parseCursorSession } from '../parsers/cursor.js'
 import { parseCodexSession } from '../parsers/codex.js'
+import { parseProxyCaptureSession } from '../parsers/proxy-capture.js'
 import type { SessionSummary } from '../parsers/types.js'
 
 export const sessionsRouter = Router()
@@ -40,19 +41,23 @@ sessionsRouter.get('/sessions/:tool/:id', async (req, res) => {
     }
 
     let detail
-    switch (tool) {
-      case 'claude-code':
-        detail = await parseClaudeCodeSession(session.filePath)
-        break
-      case 'cursor':
-        detail = await parseCursorSession(session.filePath)
-        break
-      case 'codex':
-        detail = await parseCodexSession(session.filePath)
-        break
-      default:
-        res.status(400).json({ error: 'Unknown tool' })
-        return
+    if (session.dataSource === 'proxy') {
+      detail = await parseProxyCaptureSession(session.filePath)
+    } else {
+      switch (tool) {
+        case 'claude-code':
+          detail = await parseClaudeCodeSession(session.filePath)
+          break
+        case 'cursor':
+          detail = await parseCursorSession(session.filePath)
+          break
+        case 'codex':
+          detail = await parseCodexSession(session.filePath)
+          break
+        default:
+          res.status(400).json({ error: 'Unknown tool' })
+          return
+      }
     }
 
     res.json(detail)

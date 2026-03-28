@@ -8,9 +8,17 @@ const tools: { value: ToolSource | 'all'; label: string }[] = [
   { value: 'codex', label: 'Codex' },
 ]
 
+const sources: { value: 'all' | 'local' | 'proxy'; label: string }[] = [
+  { value: 'all', label: 'All Sources' },
+  { value: 'local', label: 'Local' },
+  { value: 'proxy', label: 'Proxy' },
+]
+
 export default function SessionFilters() {
-  const { filters, setFilters } = useSessionStore()
+  const { filters, setFilters, sessions } = useSessionStore()
   const filtered = useFilteredSessions()
+
+  const hasProxySessions = sessions.some((s) => s.dataSource === 'proxy' || s.dataSource === 'local+proxy')
 
   return (
     <div className="flex items-center gap-3 px-4 py-3 border-b border-zinc-800">
@@ -29,6 +37,26 @@ export default function SessionFilters() {
           </button>
         ))}
       </div>
+      {hasProxySessions && (
+        <>
+          <span className="text-zinc-800">|</span>
+          <div className="flex gap-1">
+            {sources.map((s) => (
+              <button
+                key={s.value}
+                onClick={() => setFilters({ source: s.value })}
+                className={`px-2.5 py-1 text-xs rounded-md transition-colors ${
+                  filters.source === s.value
+                    ? 'bg-zinc-700 text-zinc-100'
+                    : 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800'
+                }`}
+              >
+                {s.label}
+              </button>
+            ))}
+          </div>
+        </>
+      )}
       <div className="flex-1" />
       <input
         type="text"

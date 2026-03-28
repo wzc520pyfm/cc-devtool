@@ -4,16 +4,26 @@
   "description": "AI Agent Execution Debugger - Visualize skill, rule, MCP, agent execution chains across Claude Code, Cursor, and Codex",
   "type": "module",
   "bin": {
-    "cc-devtool": "./dist/bin/cc-devtool.js"
+    "cc-devtool": "./bin/cc-devtool.js"
+  },
+  "files": [
+    "dist/",
+    "bin/"
+  ],
+  "engines": {
+    "node": ">=18"
   },
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
-    "build:server": "tsc -p tsconfig.node.json",
-    "build:all": "npm run build && npm run build:server",
+    "build": "tsc -p tsconfig.build.json && vite build",
+    "build:check": "tsc -b && tsc -p tsconfig.build.json --noEmit",
     "preview": "vite preview",
     "serve": "tsx cli/index.ts serve",
-    "start": "npm run serve"
+    "start": "npm run serve",
+    "prepublishOnly": "npm run build",
+    "tauri": "tauri",
+    "tauri:dev": "tauri dev",
+    "tauri:build": "tauri build"
   },
   "keywords": [
     "ai",
@@ -42,6 +52,7 @@
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.2.2",
+    "@tauri-apps/cli": "^2.10.1",
     "@types/better-sqlite3": "^7.6.13",
     "@types/express": "^5.0.6",
     "@types/react": "^19.2.14",
