@@ -19,7 +19,7 @@ import type {
   RuleRef,
   DataAvailability,
 } from './types.js'
-import { enrichCursorSummary } from './cursor-db.js'
+import { enrichCursorSummary, getFileOpsForConversation, getModelForConversation } from './cursor-db.js'
 
 const CURSOR_DIR = join(homedir(), '.cursor')
 
@@ -126,8 +126,8 @@ async function buildCursorSummary(
     dataAvailability: {
       toolCalls: 'none',
       tokenUsage: 'none',
-      fileOps: 'none',
-      reason: 'JSONL index format — tool call details not stored',
+      fileOps: 'partial',
+      reason: 'JSONL index — tool calls unavailable, file ops recovered from AI tracking DB',
     },
   }
 }
@@ -336,6 +336,30 @@ export async function parseCursorSession(filePath: string): Promise<Session> {
 
   const fileStat = await stat(filePath).catch(() => null)
 
+  if (fileOps.length === 0) {
+    const dbOps = getFileOpsForConversation(sessionId)
+    if (dbOps.length > 0) {
+      const seen = new Map<string, number>()
+      for (const op of dbOps) {
+        const prev = seen.get(op.fileName)
+        if (!prev) {
+          fileOps.push({
+            path: op.fileName,
+            type: 'update',
+            agentId: 'main',
+            timestamp: new Date(op.timestamp).toISOString(),
+            toolCallId: `db-${op.timestamp}`,
+          })
+          seen.set(op.fileName, 1)
+        } else {
+          seen.set(op.fileName, prev + 1)
+        }
+      }
+    }
+  }
+
+  const model = getModelForConversation(sessionId)
+
   return {
     id: sessionId,
     tool: 'cursor',
@@ -344,6 +368,7 @@ export async function parseCursorSession(filePath: string): Promise<Session> {
     startTime: fileStat ? new Date(fileStat.birthtime).toISOString() : new Date().toISOString(),
     endTime: fileStat ? new Date(fileStat.mtime).toISOString() : undefined,
     status: 'completed',
+    model,
     turns,
     agents,
     fileOps,

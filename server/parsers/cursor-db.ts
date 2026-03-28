@@ -1,15 +1,17 @@
 import { join } from 'path'
 import { homedir } from 'os'
 import { createRequire } from 'module'
-import type { SessionSummary, CodeStats } from './types.js'
+import type { SessionSummary, CodeStats, FileOp } from './types.js'
 
 const require = createRequire(import.meta.url)
 const DB_PATH = join(homedir(), '.cursor', 'ai-tracking', 'ai-code-tracking.db')
 
 interface AiCodeRow {
+  hash: string
   model: string
   source: string
   fileName: string
+  fileExtension: string
   conversationId: string
   timestamp: number
 }
@@ -93,6 +95,41 @@ export function getAiPercentageForProject(projectPath: string): number | null {
     return percentages.reduce((a, b) => a + b, 0) / percentages.length
   } catch {
     return null
+  }
+}
+
+export interface CursorDbFileOp {
+  fileName: string
+  model: string
+  source: string
+  timestamp: number
+}
+
+export function getFileOpsForConversation(conversationId: string): CursorDbFileOp[] {
+  const db = getDb()
+  if (!db) return []
+
+  try {
+    const rows = db.prepare(
+      'SELECT fileName, model, source, timestamp FROM ai_code_hashes WHERE conversationId = ? ORDER BY timestamp',
+    ).all(conversationId) as CursorDbFileOp[]
+    return rows
+  } catch {
+    return []
+  }
+}
+
+export function getModelForConversation(conversationId: string): string | undefined {
+  const db = getDb()
+  if (!db) return undefined
+
+  try {
+    const row = db.prepare(
+      'SELECT model FROM ai_code_hashes WHERE conversationId = ? AND model IS NOT NULL LIMIT 1',
+    ).get(conversationId) as { model: string } | undefined
+    return row?.model
+  } catch {
+    return undefined
   }
 }
 

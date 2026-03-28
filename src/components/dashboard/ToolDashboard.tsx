@@ -117,20 +117,17 @@ export default function ToolDashboard({ session }: Props) {
               {!hasAnyToolData && !hasTokenData && (
                 <p>
                   {session.tool === 'cursor'
-                    ? 'This session uses JSONL index format — tool call details are not stored in this format.'
+                    ? 'Cursor JSONL format does not record tool calls or tokens. File operations are recovered from AI tracking database.'
                     : 'No tool usage or token data found in this session.'}
                 </p>
               )}
               {hasAnyToolData && !hasTokenData && (
                 <p>
                   {session.tool === 'cursor'
-                    ? 'Token usage data is not available in Cursor transcript format.'
+                    ? 'Token usage is not tracked in Cursor transcripts. File data enriched from AI tracking database.'
                     : 'No token usage data found in this session.'}
                 </p>
               )}
-              <p className="text-zinc-600">
-                Data availability: {session.tool === 'codex' ? 'Tools ✓ Tokens ✓ Files ✓' : session.tool === 'cursor' ? 'Tools ✓ Tokens ✗ Files ✓' : 'Depends on session activity'}
-              </p>
             </div>
           </div>
         </div>
