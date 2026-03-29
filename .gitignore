@@ -6,3 +6,7 @@ dist
 # Tauri
 src-tauri/target
 src-tauri/gen
+
+# Sidecar binaries (built by pkg in CI, not committed)
+src-tauri/binaries/cc-devtool-server-*
+!src-tauri/binaries/.gitkeep
