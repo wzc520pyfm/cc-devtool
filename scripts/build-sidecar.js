@@ -53,7 +53,7 @@ function bundleWithEsbuild() {
   mkdirSync(BUNDLE_DIR, { recursive: true })
 
   run([
-    'npx esbuild',
+    'pnpm exec esbuild',
     `"${TSC_ENTRY}"`,
     '--bundle',
     '--platform=node',
@@ -83,7 +83,7 @@ function buildForTarget(targetKey) {
   mkdirSync(BINARIES_DIR, { recursive: true })
 
   run(
-    `npx pkg "${BUNDLE_ENTRY}" ` +
+    `pnpm exec pkg "${BUNDLE_ENTRY}" ` +
     `--target ${target.pkg} ` +
     `--output "${outputPath}" ` +
     `--compress GZip`

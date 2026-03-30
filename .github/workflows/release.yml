@@ -111,7 +111,7 @@ jobs:
         shell: bash
         run: |
           mkdir -p dist/bundle
-          npx esbuild dist/cli/index.js \
+          pnpm exec esbuild dist/cli/index.js \
             --bundle --platform=node --format=cjs --target=node20 \
             --outfile=dist/bundle/cli.cjs \
             --external:better-sqlite3 \
@@ -122,7 +122,7 @@ jobs:
         shell: bash
         run: |
           mkdir -p src-tauri/binaries
-          npx pkg dist/bundle/cli.cjs \
+          pnpm exec pkg dist/bundle/cli.cjs \
             --target ${{ matrix.pkg_target }} \
             --output "src-tauri/binaries/cc-devtool-server-${{ matrix.sidecar_triple }}${{ matrix.sidecar_ext }}" \
             --compress GZip
