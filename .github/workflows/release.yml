@@ -107,15 +107,26 @@ jobs:
         shell: bash
         run: pnpm rebuild better-sqlite3
 
-      - name: Build sidecar executable
+      - name: Bundle server (esbuild ESM->CJS)
+        shell: bash
+        run: |
+          mkdir -p dist/bundle
+          npx esbuild dist/cli/index.js \
+            --bundle --platform=node --format=cjs --target=node20 \
+            --outfile=dist/bundle/cli.cjs \
+            --external:better-sqlite3 \
+            --define:import.meta.url=_importMetaUrl \
+            '--banner:js=var _importMetaUrl=require("url").pathToFileURL(__filename).href;'
+
+      - name: Build sidecar executable (pkg)
         shell: bash
         run: |
           mkdir -p src-tauri/binaries
-          npx pkg dist/cli/index.js \
+          npx pkg dist/bundle/cli.cjs \
             --target ${{ matrix.pkg_target }} \
             --output "src-tauri/binaries/cc-devtool-server-${{ matrix.sidecar_triple }}${{ matrix.sidecar_ext }}" \
             --compress GZip
-          ls -la src-tauri/binaries/
+          ls -lh src-tauri/binaries/
 
       - name: Prepare Tauri signing key
         shell: bash
