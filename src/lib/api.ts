@@ -29,6 +29,13 @@ async function putJSON<T>(url: string, body: unknown): Promise<T> {
   return res.json()
 }
 
+export interface CcSwitchInfo {
+  detected: boolean
+  address?: string
+  port?: number
+  apps?: { appType: string; enabled: boolean }[]
+}
+
 export interface ProxyStatus {
   running: boolean
   port: number
@@ -39,6 +46,7 @@ export interface ProxyStatus {
   captureCount: number
   capturesDiskBytes: number
   lastCaptureTime: string | null
+  ccSwitch: CcSwitchInfo
 }
 
 export interface ProxyConfig {

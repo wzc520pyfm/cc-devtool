@@ -9,6 +9,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.1.3] - 2026-03-31
+
+### Enhanced
+
+- **Full Proxy Data Capture**: Proxy now captures complete content blocks from API streams — tool calls with full parameters, assistant text, thinking blocks, and user messages (previously only captured metadata)
+- **Rich Proxy Session Parsing**: Proxy captures are parsed into full Sessions with tool calls, file operations, skill hits, MCP calls, and rule references (previously showed only summary placeholders)
+- **cc-switch Auto-Detection**: Proxy config page automatically detects cc-switch installation by reading `~/.cc-switch/cc-switch.db`, showing detected address/port with one-click Apply button
+- **Proxy Page UI Refresh**: Updated descriptions and added "What Gets Captured" visual grid showing all captured data types (tool calls, token usage, thinking, file ops)
+
+### Technical
+
+- Anthropic stream: full content block reconstruction via delta accumulation (`content_block_start` → `content_block_delta` → `content_block_stop`)
+- OpenAI stream: captures full output items from `response.completed` events and Chat Completions delta accumulation
+- Non-streaming responses: extracts content blocks from response body
+- `dataAvailability` for proxy captures upgraded from `partial`/`none` to `full` when content blocks are present
+
 ## [0.1.2] - 2026-03-31
 
 ### Fixed

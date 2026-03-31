@@ -32,10 +32,47 @@ export default function ProxyConfig() {
 
   const markDirty = () => setDirty(true)
 
+  const ccSwitch = status?.ccSwitch
+  const ccSwitchUrl = ccSwitch?.detected
+    ? `http://${ccSwitch.address ?? '127.0.0.1'}:${ccSwitch.port}`
+    : null
+
+  const isUsingCcSwitch = ccSwitchUrl
+    && anthropic.includes(`:${ccSwitch!.port}`)
+
+  const applyCcSwitch = () => {
+    if (!ccSwitchUrl) return
+    setAnthropic(ccSwitchUrl)
+    setOpenai(ccSwitchUrl)
+    setDirty(true)
+  }
+
   return (
     <div className="border border-zinc-800 rounded-lg p-4">
       <h3 className="text-sm font-semibold text-zinc-300 mb-3">Configuration</h3>
       <div className="space-y-3">
+        {ccSwitch?.detected && !isUsingCcSwitch && (
+          <div className="bg-amber-500/5 border border-amber-500/20 rounded-lg p-3">
+            <div className="flex items-center justify-between gap-2">
+              <div className="min-w-0">
+                <p className="text-xs font-medium text-amber-400">cc-switch detected</p>
+                <p className="text-[11px] text-zinc-500 mt-0.5 truncate font-mono">{ccSwitchUrl}</p>
+              </div>
+              <button
+                onClick={applyCcSwitch}
+                className="shrink-0 px-3 py-1.5 text-xs font-medium rounded bg-amber-500/10 text-amber-400 border border-amber-500/30 hover:bg-amber-500/20 transition-colors"
+              >
+                Apply
+              </button>
+            </div>
+          </div>
+        )}
+        {isUsingCcSwitch && (
+          <div className="bg-emerald-500/5 border border-emerald-500/20 rounded-lg px-3 py-2 flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" />
+            <p className="text-xs text-emerald-400">Upstream routed through cc-switch</p>
+          </div>
+        )}
         <div>
           <label className="text-[10px] uppercase tracking-wider text-zinc-500 block mb-1">Port</label>
           <input

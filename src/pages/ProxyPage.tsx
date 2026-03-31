@@ -20,7 +20,7 @@ export default function ProxyPage() {
       <div className="border-b border-zinc-800 p-4">
         <h2 className="text-xl font-semibold">Proxy</h2>
         <p className="text-sm text-zinc-500 mt-1">
-          Transparent API proxy for capturing token usage and request data
+          Transparent API proxy for capturing full session data — tool calls, messages, thinking, and token usage
         </p>
       </div>
       <div className="flex-1 overflow-y-auto p-4 space-y-4">

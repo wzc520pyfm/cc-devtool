@@ -11,7 +11,7 @@ export default function ProxyUsage() {
     <div className="border border-zinc-800 rounded-lg p-4">
       <h3 className="text-sm font-semibold text-zinc-300 mb-3">Usage Instructions</h3>
       <p className="text-xs text-zinc-500 mb-3">
-        Point your AI agent's API base URL to the proxy. The proxy transparently logs all requests and forwards them upstream.
+        Point your AI agent's API base URL to the proxy. The proxy captures full session data — tool calls with parameters, assistant messages, thinking blocks, and token usage — then forwards requests upstream transparently.
       </p>
 
       <div className="space-y-3">
@@ -27,6 +27,28 @@ export default function ProxyUsage() {
           <code className="block bg-zinc-900 border border-zinc-800 rounded px-3 py-2 text-xs text-emerald-400 font-mono select-all">
             OPENAI_BASE_URL=http://localhost:{port}/openai codex
           </code>
+        </div>
+
+        <div className="border-t border-zinc-800 pt-3 mt-3">
+          <p className="text-[10px] uppercase tracking-wider text-zinc-500 mb-1">What Gets Captured</p>
+          <div className="grid grid-cols-2 gap-2 mt-2">
+            <div className="bg-zinc-900/50 rounded px-2.5 py-1.5 text-xs text-zinc-400 flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" />
+              Tool calls + parameters
+            </div>
+            <div className="bg-zinc-900/50 rounded px-2.5 py-1.5 text-xs text-zinc-400 flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" />
+              Token usage
+            </div>
+            <div className="bg-zinc-900/50 rounded px-2.5 py-1.5 text-xs text-zinc-400 flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" />
+              Assistant text + thinking
+            </div>
+            <div className="bg-zinc-900/50 rounded px-2.5 py-1.5 text-xs text-zinc-400 flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" />
+              File ops / Skills / MCP
+            </div>
+          </div>
         </div>
 
         <div className="border-t border-zinc-800 pt-3 mt-3">
@@ -47,7 +69,7 @@ export default function ProxyUsage() {
         <div className="border-t border-zinc-800 pt-3 mt-3">
           <p className="text-[10px] uppercase tracking-wider text-zinc-500 mb-1">Cursor Limitation</p>
           <p className="text-xs text-zinc-600">
-            Cursor routes API calls through its own internal proxy. The cc-devtool proxy cannot intercept Cursor's API traffic. For Cursor, data is collected passively from local files and SQLite databases.
+            Cursor routes API calls through its own internal proxy. The cc-devtool proxy cannot intercept Cursor's API traffic. For Cursor, data is collected passively from local transcript files and the AI tracking SQLite database.
           </p>
         </div>
       </div>

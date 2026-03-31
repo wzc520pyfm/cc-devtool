@@ -1,12 +1,15 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync, statSync } from 'fs'
 import { join } from 'path'
 import { homedir } from 'os'
+import { createRequire } from 'module'
 import type { Server } from 'http'
 import { startProxyServer } from './index.js'
 import { getCapturesDir } from './capture.js'
 
+const require = createRequire(import.meta.url)
 const CONFIG_DIR = join(homedir(), '.cc-devtool')
 const CONFIG_PATH = join(CONFIG_DIR, 'config.json')
+const CC_SWITCH_DB_PATH = join(homedir(), '.cc-switch', 'cc-switch.db')
 
 export interface ProxyConfig {
   port: number
@@ -14,6 +17,13 @@ export interface ProxyConfig {
   openaiUpstream: string
   autoStart: boolean
   dataSourcePreference: 'all' | 'local' | 'proxy'
+}
+
+export interface CcSwitchInfo {
+  detected: boolean
+  address?: string
+  port?: number
+  apps?: { appType: string; enabled: boolean }[]
 }
 
 export interface ProxyStatus {
@@ -26,6 +36,7 @@ export interface ProxyStatus {
   captureCount: number
   capturesDiskBytes: number
   lastCaptureTime: string | null
+  ccSwitch: CcSwitchInfo
 }
 
 const DEFAULT_CONFIG: ProxyConfig = {
@@ -106,6 +117,34 @@ class ProxyManager {
     return this.getConfig()
   }
 
+  detectCcSwitch(): CcSwitchInfo {
+    try {
+      if (!existsSync(CC_SWITCH_DB_PATH)) return { detected: false }
+
+      const Database = require('better-sqlite3')
+      const db = new Database(CC_SWITCH_DB_PATH, { readonly: true })
+      try {
+        const rows = db.prepare(
+          'SELECT app_type, proxy_enabled, listen_address, listen_port FROM proxy_config',
+        ).all() as { app_type: string; proxy_enabled: number; listen_address: string; listen_port: number }[]
+
+        if (rows.length === 0) return { detected: false }
+
+        const first = rows[0]
+        return {
+          detected: true,
+          address: first.listen_address,
+          port: first.listen_port,
+          apps: rows.map((r) => ({ appType: r.app_type, enabled: r.proxy_enabled === 1 })),
+        }
+      } finally {
+        db.close()
+      }
+    } catch {
+      return { detected: false }
+    }
+  }
+
   getStatus(): ProxyStatus {
     const capturesDir = getCapturesDir()
     let captureCount = 0
@@ -139,6 +178,7 @@ class ProxyManager {
       captureCount,
       capturesDiskBytes,
       lastCaptureTime,
+      ccSwitch: this.detectCcSwitch(),
     }
   }
 
