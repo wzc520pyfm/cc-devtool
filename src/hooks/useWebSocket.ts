@@ -13,8 +13,11 @@ export function useWebSocket(onMessage: (msg: WSMessage) => void) {
   onMessageRef.current = onMessage
 
   const connect = useCallback(() => {
-    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
-    const ws = new WebSocket(`${protocol}//${window.location.host}/ws`)
+    const isTauri = '__TAURI_INTERNALS__' in window
+    const wsUrl = isTauri
+      ? 'ws://localhost:4173/ws'
+      : `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/ws`
+    const ws = new WebSocket(wsUrl)
 
     ws.onmessage = (event) => {
       try {

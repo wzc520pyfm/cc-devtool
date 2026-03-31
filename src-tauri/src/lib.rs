@@ -53,15 +53,12 @@ pub fn run() {
 
             let handle = app.handle().clone();
             std::thread::spawn(move || {
-                let server_ready = wait_for_server(4173, 15000);
-                if server_ready {
+                if wait_for_server(4173, 15000) {
                     log::info!("cc-devtool server is ready");
                 } else {
-                    log::warn!("cc-devtool server did not become ready within 15s, showing window anyway");
+                    log::warn!("cc-devtool server did not become ready within 15s");
                 }
                 if let Some(window) = handle.get_webview_window("main") {
-                    let url: tauri::Url = "http://localhost:4173".parse().unwrap();
-                    let _ = window.navigate(url);
                     let _ = window.show();
                 }
             });

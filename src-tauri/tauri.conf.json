@@ -13,7 +13,6 @@
       {
         "title": "cc-devtool",
         "label": "main",
-        "url": "http://localhost:4173",
         "width": 1200,
         "height": 800,
         "minWidth": 900,

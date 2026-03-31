@@ -1,6 +1,7 @@
 import type { SessionSummary, Session, RawFileResponse } from '@shared/types'
 
-const BASE = '/api'
+const isTauri = typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window
+const BASE = isTauri ? 'http://localhost:4173/api' : '/api'
 
 async function fetchJSON<T>(url: string): Promise<T> {
   const res = await fetch(`${BASE}${url}`)
