@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.1.1] - 2026-03-30
+
+### Fixed
+
+- Fix macOS app crash on launch caused by deprecated `plugins.shell.scope` config (Tauri v2 only supports `open` field)
+
 ## [0.1.0] - 2026-03-23
 
 First release of cc-devtool — an AI agent execution debugger that visualizes skill, rule, MCP, and agent execution chains across Claude Code, Cursor, and Codex.
