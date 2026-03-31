@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Fix macOS app crash on launch caused by deprecated `plugins.shell.scope` config (Tauri v2 only supports `open` field)
+- Fix white screen after launch by serving frontend from Tauri bundled assets instead of sidecar (pkg binary doesn't include frontend files)
+- Fix empty data in desktop app by adding CORS headers to sidecar API (Tauri webview origin differs from localhost:4173)
 
 ## [0.1.0] - 2026-03-23
 
