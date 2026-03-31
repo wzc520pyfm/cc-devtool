@@ -1,24 +1,20 @@
+use std::net::TcpStream;
 use tauri::Manager;
 use tauri_plugin_shell::ShellExt;
 
 fn wait_for_server(port: u16, timeout_ms: u64) -> bool {
-    let url = format!("http://localhost:{}/api/sessions", port);
+    let addr = format!("127.0.0.1:{}", port);
     let interval = std::time::Duration::from_millis(200);
     let deadline = std::time::Instant::now() + std::time::Duration::from_millis(timeout_ms);
 
     while std::time::Instant::now() < deadline {
-        match reqwest::blocking::Client::builder()
-            .timeout(std::time::Duration::from_secs(2))
-            .build()
+        if TcpStream::connect_timeout(
+            &addr.parse().unwrap(),
+            std::time::Duration::from_secs(1),
+        )
+        .is_ok()
         {
-            Ok(client) => {
-                if let Ok(resp) = client.get(&url).send() {
-                    if resp.status().is_success() {
-                        return true;
-                    }
-                }
-            }
-            Err(_) => {}
+            return true;
         }
         std::thread::sleep(interval);
     }

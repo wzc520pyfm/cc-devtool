@@ -1,7 +1,7 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "cc-devtool",
-  "version": "0.1.2",
+  "version": "0.1.0",
   "identifier": "com.cc-devtool.app",
   "build": {
     "frontendDist": "../dist/public",
@@ -13,6 +13,7 @@
       {
         "title": "cc-devtool",
         "label": "main",
+        "url": "http://localhost:4173",
         "width": 1200,
         "height": 800,
         "minWidth": 900,
@@ -31,9 +32,6 @@
   "bundle": {
     "active": true,
     "targets": "all",
-    "externalBin": [
-      "binaries/cc-devtool-server"
-    ],
     "createUpdaterArtifacts": true,
     "icon": [
       "icons/32x32.png",
@@ -48,7 +46,12 @@
   },
   "plugins": {
     "shell": {
-      "open": true
+      "scope": {
+        "sidecar": {
+          "name": "binaries/cc-devtool-server",
+          "args": true
+        }
+      }
     },
     "updater": {
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDMxRUUxRkE1Mjc2RDhFNzYKUldSMmptMG5wUi91TVR5dGsycG1JaCtpNGNwRW55MU9RR0N0RGk2dE1XZ2lUVHdBdFFEUXhWZXUK",

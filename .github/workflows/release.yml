@@ -245,6 +245,7 @@ jobs:
     name: Publish GitHub Release
     runs-on: ubuntu-22.04
     needs: release
+    if: always() && !cancelled()
     permissions:
       contents: write
     steps:
@@ -307,6 +308,7 @@ jobs:
     name: Assemble latest.json
     runs-on: ubuntu-22.04
     needs: publish-release
+    if: always() && needs.publish-release.result == 'success'
     permissions:
       contents: write
     steps:
