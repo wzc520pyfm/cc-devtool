@@ -8,10 +8,14 @@ interface Filters {
   search: string
 }
 
+let sessionsFetchGen = 0
+let sessionsAbort: AbortController | null = null
+
 interface SessionStore {
   sessions: SessionSummary[]
   filters: Filters
   loading: boolean
+  fetchError: string | null
   setFilters: (filters: Partial<Filters>) => void
   fetchSessions: () => Promise<void>
   fetchSessionDetail: (tool: string, id: string) => Promise<Session | null>
@@ -21,17 +25,28 @@ export const useSessionStore = create<SessionStore>((set) => ({
   sessions: [],
   filters: { tool: 'all', source: 'all', search: '' },
   loading: false,
+  fetchError: null,
 
   setFilters: (partial) =>
     set((s) => ({ filters: { ...s.filters, ...partial } })),
 
   fetchSessions: async () => {
-    set({ loading: true })
+    sessionsAbort?.abort()
+    const ac = new AbortController()
+    sessionsAbort = ac
+    const gen = ++sessionsFetchGen
+
+    set({ loading: true, fetchError: null })
+
     try {
-      const sessions = await api.getSessions()
-      set({ sessions, loading: false })
-    } catch {
-      set({ loading: false })
+      const sessions = await api.getSessions(ac.signal)
+      if (ac.signal.aborted || gen !== sessionsFetchGen) return
+      set({ sessions, loading: false, fetchError: null })
+    } catch (e) {
+      if (ac.signal.aborted || gen !== sessionsFetchGen) return
+      const message =
+        e instanceof Error ? e.message : 'Failed to load sessions'
+      set({ loading: false, fetchError: message })
     }
   },
 

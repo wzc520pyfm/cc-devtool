@@ -19,7 +19,11 @@ import type {
   RuleRef,
   DataAvailability,
 } from './types.js'
-import { enrichCursorSummary, getFileOpsForConversation, getModelForConversation } from './cursor-db.js'
+import {
+  enrichCursorSummariesBatch,
+  getFileOpsForConversation,
+  getModelForConversation,
+} from './cursor-db.js'
 
 const CURSOR_DIR = join(homedir(), '.cursor')
 
@@ -73,7 +77,7 @@ export async function listCursorSessions(): Promise<SessionSummary[]> {
     }
   } catch { /* cursor dir may not exist */ }
 
-  return [...sessionMap.values()].map(enrichCursorSummary)
+  return enrichCursorSummariesBatch([...sessionMap.values()])
 }
 
 async function buildCursorSummary(

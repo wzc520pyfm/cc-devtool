@@ -13,11 +13,23 @@ let cachedSessions: SessionSummary[] | null = null
 let cacheTimestamp = 0
 const CACHE_TTL = 10_000
 
+/** Deduplicate concurrent full scans (common when UI + WebSocket both refresh). */
+let listAllSessionsInFlight: Promise<SessionSummary[]> | null = null
+
+function loadAllSessionsDeduped(): Promise<SessionSummary[]> {
+  if (!listAllSessionsInFlight) {
+    listAllSessionsInFlight = listAllSessions().finally(() => {
+      listAllSessionsInFlight = null
+    })
+  }
+  return listAllSessionsInFlight
+}
+
 sessionsRouter.get('/sessions', async (_req, res) => {
   try {
     const now = Date.now()
     if (!cachedSessions || now - cacheTimestamp > CACHE_TTL) {
-      cachedSessions = await listAllSessions()
+      cachedSessions = await loadAllSessionsDeduped()
       cacheTimestamp = now
     }
     res.json(cachedSessions)
@@ -30,7 +42,7 @@ sessionsRouter.get('/sessions', async (_req, res) => {
 sessionsRouter.get('/sessions/:tool/:id', async (req, res) => {
   try {
     const { tool, id } = req.params
-    const sessions = cachedSessions ?? (await listAllSessions())
+    const sessions = cachedSessions ?? (await loadAllSessionsDeduped())
     const session = sessions.find(
       (s) => s.tool === tool && s.id === id,
     )
@@ -70,7 +82,7 @@ sessionsRouter.get('/sessions/:tool/:id', async (req, res) => {
 sessionsRouter.get('/sessions/:tool/:id/raw', async (req, res) => {
   try {
     const { tool, id } = req.params
-    const sessions = cachedSessions ?? (await listAllSessions())
+    const sessions = cachedSessions ?? (await loadAllSessionsDeduped())
     const session = sessions.find(
       (s) => s.tool === tool && s.id === id,
     )

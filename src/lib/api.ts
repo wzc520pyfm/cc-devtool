@@ -3,8 +3,8 @@ import type { SessionSummary, Session, RawFileResponse } from '@shared/types'
 const isTauri = typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window
 const BASE = isTauri ? 'http://localhost:4173/api' : '/api'
 
-async function fetchJSON<T>(url: string): Promise<T> {
-  const res = await fetch(`${BASE}${url}`)
+async function fetchJSON<T>(url: string, init?: RequestInit): Promise<T> {
+  const res = await fetch(`${BASE}${url}`, init)
   if (!res.ok) throw new Error(`${res.status} ${res.statusText}`)
   return res.json()
 }
@@ -58,7 +58,8 @@ export interface ProxyConfig {
 }
 
 export const api = {
-  getSessions: () => fetchJSON<SessionSummary[]>('/sessions'),
+  getSessions: (signal?: AbortSignal) =>
+    fetchJSON<SessionSummary[]>('/sessions', signal ? { signal } : undefined),
   getSessionDetail: (tool: string, id: string) =>
     fetchJSON<Session>(`/sessions/${tool}/${encodeURIComponent(id)}`),
   getRawFile: (tool: string, id: string) =>

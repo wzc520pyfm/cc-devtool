@@ -45,35 +45,73 @@ function getDb() {
 }
 
 export function enrichCursorSummary(summary: SessionSummary): SessionSummary {
+  const [one] = enrichCursorSummariesBatch([summary])
+  return one
+}
+
+/** One SQLite round-trip per chunk instead of one query per session (major win for large local lists). */
+export function enrichCursorSummariesBatch(summaries: SessionSummary[]): SessionSummary[] {
   const db = getDb()
-  if (!db) return summary
+  if (!db) return summaries
 
-  try {
-    const rows = db.prepare(
-      'SELECT DISTINCT model, source, fileName FROM ai_code_hashes WHERE conversationId = ?',
-    ).all(summary.id) as AiCodeRow[]
-
-    if (rows.length === 0) return summary
-
-    const models = [...new Set(rows.map((r) => r.model).filter(Boolean))]
-    const uniqueFiles = new Set(rows.map((r) => r.fileName).filter(Boolean))
-    const codeBlocks = rows.length
-
-    const enriched = { ...summary }
-
-    if (models.length > 0 && !enriched.model) {
-      enriched.model = models[0]
+  const cursorIds: string[] = []
+  const idSet = new Set<string>()
+  for (const s of summaries) {
+    if (s.tool === 'cursor' && !idSet.has(s.id)) {
+      idSet.add(s.id)
+      cursorIds.push(s.id)
     }
-
-    enriched.codeStats = {
-      codeBlocks,
-      uniqueFiles: uniqueFiles.size,
-    }
-
-    return enriched
-  } catch {
-    return summary
   }
+  if (cursorIds.length === 0) return summaries
+
+  const agg = new Map<
+    string,
+    { models: Set<string>; files: Set<string>; codeBlocks: number }
+  >()
+
+  const CHUNK = 400
+  try {
+    for (let i = 0; i < cursorIds.length; i += CHUNK) {
+      const chunk = cursorIds.slice(i, i + CHUNK)
+      const placeholders = chunk.map(() => '?').join(',')
+      const rows = db
+        .prepare(
+          `SELECT DISTINCT conversationId, model, source, fileName FROM ai_code_hashes WHERE conversationId IN (${placeholders})`,
+        )
+        .all(...chunk) as (AiCodeRow & { conversationId: string })[]
+
+      for (const row of rows) {
+        const cid = row.conversationId
+        let a = agg.get(cid)
+        if (!a) {
+          a = { models: new Set(), files: new Set(), codeBlocks: 0 }
+          agg.set(cid, a)
+        }
+        a.codeBlocks++
+        if (row.model) a.models.add(row.model)
+        if (row.fileName) a.files.add(row.fileName)
+      }
+    }
+  } catch {
+    return summaries
+  }
+
+  return summaries.map((s) => {
+    if (s.tool !== 'cursor') return s
+    const data = agg.get(s.id)
+    if (!data || data.codeBlocks === 0) return s
+
+    const enriched = { ...s }
+    const firstModel = [...data.models][0]
+    if (firstModel && !enriched.model) {
+      enriched.model = firstModel
+    }
+    enriched.codeStats = {
+      codeBlocks: data.codeBlocks,
+      uniqueFiles: data.files.size,
+    }
+    return enriched
+  })
 }
 
 export function getAiPercentageForProject(projectPath: string): number | null {

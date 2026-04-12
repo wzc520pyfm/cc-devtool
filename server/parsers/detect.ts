@@ -36,25 +36,29 @@ export async function listAllSessions(): Promise<SessionSummary[]> {
   const tools = await detectTools()
   const allSessions: SessionSummary[] = []
 
-  const promises: Promise<SessionSummary[]>[] = []
+  const jobs: { name: string; run: () => Promise<SessionSummary[]> }[] = []
 
   if (tools.find((t) => t.name === 'claude-code')?.available) {
-    promises.push(listClaudeCodeSessions())
+    jobs.push({ name: 'claude-code', run: listClaudeCodeSessions })
   }
   if (tools.find((t) => t.name === 'cursor')?.available) {
-    promises.push(listCursorSessions())
+    jobs.push({ name: 'cursor', run: listCursorSessions })
   }
   if (tools.find((t) => t.name === 'codex')?.available) {
-    promises.push(listCodexSessions())
+    jobs.push({ name: 'codex', run: listCodexSessions })
   }
   if (tools.find((t) => t.name === 'proxy')?.available) {
-    promises.push(listProxyCaptures())
+    jobs.push({ name: 'proxy', run: listProxyCaptures })
   }
 
-  const results = await Promise.all(promises)
-  for (const sessions of results) {
-    allSessions.push(...sessions)
-  }
+  const settled = await Promise.allSettled(jobs.map((j) => j.run()))
+  settled.forEach((result, i) => {
+    if (result.status === 'fulfilled') {
+      allSessions.push(...result.value)
+    } else {
+      console.error(`Session list failed for ${jobs[i].name}:`, result.reason)
+    }
+  })
 
   for (const s of allSessions) {
     if (!s.dataSource) s.dataSource = 'local'
