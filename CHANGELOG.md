@@ -9,6 +9,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.1.4] - 2026-04-20
+
+### Performance
+
+- **Session list speed-up**: Cursor SQLite enrichment is now batched (`IN (...)`) instead of one query per session, dramatically reducing load time when the local session count is large
+- **Deduplicate concurrent scans**: `/api/sessions` coalesces in-flight full scans so the UI + WebSocket refresh no longer trigger duplicate filesystem walks
+
+### Fixed
+
+- **"No sessions" after fetch failure**: Session list fetch now aborts stale requests, shows an inline error + Retry, and keeps the existing list visible while refreshing; previously a transient failure silently cleared the list and required navigating away and back to recover
+- **One broken parser no longer drops everything**: `listAllSessions` uses `Promise.allSettled`, so a single failing tool (e.g. corrupt Cursor DB) no longer returns an empty list for all tools
+
+### Added (Proxy)
+
+- **Bidirectional cc-switch toggle**: One-click switch on/off for routing upstream through cc-switch, with memory of the last non-cc-switch upstream so switching back is lossless
+- **Upstream presets**: Save any upstream combo as a named preset (stored in browser `localStorage`). Built-in `Direct` preset is always available; `cc-switch` preset appears when detected. Active preset is highlighted
+- **Save & Restart**: When the proxy is running, a single-click "Save & Restart" button applies config changes and hot-restarts the proxy — no more manual stop/start
+- **New endpoint**: `POST /api/proxy/restart` performs an atomic stop + start
+
+---
+
 ## [0.1.3] - 2026-03-31
 
 ### Enhanced
