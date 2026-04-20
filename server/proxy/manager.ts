@@ -117,6 +117,13 @@ class ProxyManager {
     return this.getConfig()
   }
 
+  async restart(overrides?: Partial<ProxyConfig>): Promise<void> {
+    if (this.server) {
+      await this.stop()
+    }
+    await this.start(overrides)
+  }
+
   detectCcSwitch(): CcSwitchInfo {
     try {
       if (!existsSync(CC_SWITCH_DB_PATH)) return { detected: false }

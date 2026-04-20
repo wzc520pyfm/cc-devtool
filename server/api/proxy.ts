@@ -42,3 +42,13 @@ proxyRouter.put('/proxy/config', (req, res) => {
     res.status(500).json({ error: String(err) })
   }
 })
+
+proxyRouter.post('/proxy/restart', async (req, res) => {
+  try {
+    const overrides = req.body as Record<string, unknown> | undefined
+    await proxyManager.restart(overrides)
+    res.json(proxyManager.getStatus())
+  } catch (err) {
+    res.status(500).json({ error: String(err) })
+  }
+})

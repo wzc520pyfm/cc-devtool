@@ -9,6 +9,7 @@ interface ProxyStore {
   fetchStatus: () => Promise<void>
   startProxy: (config?: ProxyConfig) => Promise<void>
   stopProxy: () => Promise<void>
+  restartProxy: (config?: ProxyConfig) => Promise<void>
   updateConfig: (config: ProxyConfig) => Promise<void>
 }
 
@@ -40,6 +41,16 @@ export const useProxyStore = create<ProxyStore>((set) => ({
     set({ loading: true, error: null })
     try {
       const status = await api.stopProxy()
+      set({ status, loading: false })
+    } catch (err) {
+      set({ loading: false, error: String(err) })
+    }
+  },
+
+  restartProxy: async (config) => {
+    set({ loading: true, error: null })
+    try {
+      const status = await api.restartProxy(config)
       set({ status, loading: false })
     } catch (err) {
       set({ loading: false, error: String(err) })

@@ -68,5 +68,6 @@ export const api = {
   getProxyStatus: () => fetchJSON<ProxyStatus>('/proxy/status'),
   startProxy: (config?: ProxyConfig) => postJSON<ProxyStatus>('/proxy/start', config),
   stopProxy: () => postJSON<ProxyStatus>('/proxy/stop'),
+  restartProxy: (config?: ProxyConfig) => postJSON<ProxyStatus>('/proxy/restart', config),
   updateProxyConfig: (config: ProxyConfig) => putJSON<ProxyConfig>('/proxy/config', config),
 }
