@@ -25,7 +25,12 @@ export default function Layout() {
   const proxyRunning = status?.running ?? false
 
   return (
-    <div className="flex h-screen bg-zinc-950 text-zinc-100">
+    <div className="flex flex-col h-screen bg-zinc-950 text-zinc-100">
+      <div
+        data-tauri-drag-region
+        className="h-[28px] shrink-0 w-full select-none"
+      />
+      <div className="flex flex-1 min-h-0">
       <aside className="w-56 border-r border-zinc-800 flex flex-col">
         <div className="p-4 border-b border-zinc-800">
           <h1 className="text-lg font-bold tracking-tight">
@@ -70,6 +75,7 @@ export default function Layout() {
       <main className="flex-1 overflow-hidden">
         <Outlet />
       </main>
+      </div>
     </div>
   )
 }
