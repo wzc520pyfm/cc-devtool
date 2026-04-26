@@ -194,11 +194,11 @@ export function addTokenUsage(a: TokenUsage, b: TokenUsage): TokenUsage {
 
 export function categorizeToolCall(name: string): ToolCategory {
   const fileRead = ['Read', 'Grep', 'Glob', 'SemanticSearch', 'ReadLints', 'read_file']
-  const fileWrite = ['Write', 'StrReplace', 'Delete', 'EditNotebook', 'write_file', 'apply_patch']
-  const shell = ['Shell', 'exec_command']
-  const search = ['WebSearch', 'WebFetch']
+  const fileWrite = ['Write', 'StrReplace', 'Delete', 'EditNotebook', 'ApplyPatch', 'write_file', 'apply_patch']
+  const shell = ['Shell', 'AwaitShell', 'exec_command']
+  const search = ['WebSearch', 'WebFetch', 'FetchMcpResource']
   const skill = ['Skill']
-  const agent = ['Task']
+  const agent = ['Task', 'GenerateImage', 'AskQuestion']
 
   if (fileRead.includes(name)) return 'file_read'
   if (fileWrite.includes(name)) return 'file_write'

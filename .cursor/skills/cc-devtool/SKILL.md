@@ -169,8 +169,8 @@ All parsers use shared path-matching logic:
 - **Zustand selectors**: Never call store methods inside selectors (`s => s.method()`). This creates new references each render → infinite loop. Use standalone hooks that select primitive/stable values.
 - **Express 5 wildcards**: Use `/{*path}` not `*` for catch-all routes.
 - **React 19 useRef**: Must pass initial value — `useRef<T>(undefined)` not `useRef<T>()`.
-- **Cursor session dedup**: Same session can exist as both `.jsonl` and `.txt`. Parser prefers `.txt` because it contains `[Tool call]` markers with tool names and parameters — `.jsonl` only has text content.
-- **Cursor JSONL limitation**: Cursor's `.jsonl` transcripts deliberately exclude tool calls and results. All tool call data comes from `.txt` format only.
+- **Cursor session dedup**: Same session can exist as both `.jsonl` and `.txt`. Parser prefers `.txt` because it's always complete.
+- **Cursor JSONL dual format**: Newer Cursor versions write structured `tool_use` content blocks (with `name` + `input`) directly into JSONL. Older versions only wrote `text` blocks. The parser auto-detects which format is present and handles both. `ApplyPatch` tool calls contain file paths in patch text format.
 - **Cache headers**: `index.html` must be `no-cache`; hashed assets under `/assets/` can be `immutable`.
 - **Codex date dirs**: Sessions are organized `year/month/day/*.jsonl` — parser must traverse 3 levels.
 

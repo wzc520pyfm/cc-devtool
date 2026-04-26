@@ -1,6 +1,6 @@
 {
   "name": "cc-devtool",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "AI Agent Execution Debugger - Visualize skill, rule, MCP, agent execution chains across Claude Code, Cursor, and Codex",
   "type": "module",
   "bin": {

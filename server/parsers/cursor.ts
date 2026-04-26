@@ -17,7 +17,6 @@ import type {
   SkillHit,
   McpCall,
   RuleRef,
-  DataAvailability,
 } from './types.js'
 import {
   enrichCursorSummariesBatch,
@@ -31,11 +30,33 @@ export function getCursorBaseDir(): string {
   return CURSOR_DIR
 }
 
+interface CursorContentBlock {
+  type: string
+  text?: string
+  name?: string
+  input?: Record<string, unknown> | string
+  thinking?: string
+}
+
 interface CursorRecord {
   role: string
   message: {
-    content: { type: string; text: string }[]
+    content: CursorContentBlock[]
   }
+}
+
+function recordHasStructuredToolUse(records: CursorRecord[]): boolean {
+  return records.some((r) =>
+    r.message?.content?.some((b) => b.type === 'tool_use' && b.name),
+  )
+}
+
+function normalizeToolInput(raw: Record<string, unknown> | string | undefined): Record<string, unknown> {
+  if (!raw) return {}
+  if (typeof raw === 'string') {
+    try { return JSON.parse(raw) } catch { return { _raw: raw } }
+  }
+  return raw
 }
 
 export async function listCursorSessions(): Promise<SessionSummary[]> {
@@ -104,6 +125,7 @@ async function buildCursorSummary(
   const startTime = fileStat ? new Date(fileStat.birthtime).toISOString() : new Date().toISOString()
   const endTime = fileStat ? new Date(fileStat.mtime).toISOString() : undefined
 
+  const hasStructured = recordHasStructuredToolUse(records)
   const toolCalls = extractToolCallsFromRecords(records)
   const subagentsDir = join(transcriptsDir, sessionId, 'subagents')
   let agentCount = 1
@@ -126,13 +148,20 @@ async function buildCursorSummary(
     agentCount,
     tokenUsage: emptyTokenUsage(),
     filePath,
-    hasToolData: false,
-    dataAvailability: {
-      toolCalls: 'none',
-      tokenUsage: 'none',
-      fileOps: 'partial',
-      reason: 'JSONL index — tool calls unavailable, file ops recovered from AI tracking DB',
-    },
+    hasToolData: hasStructured,
+    dataAvailability: hasStructured
+      ? {
+          toolCalls: 'full',
+          tokenUsage: 'none',
+          fileOps: 'full',
+          reason: 'Token usage not available in Cursor transcript format',
+        }
+      : {
+          toolCalls: 'none',
+          tokenUsage: 'none',
+          fileOps: 'partial',
+          reason: 'Legacy JSONL — tool calls unavailable, file ops recovered from AI tracking DB',
+        },
   }
 }
 
@@ -193,12 +222,22 @@ function decodeCursorProject(encoded: string): string {
 
 function extractToolCallsFromRecords(records: CursorRecord[]): ToolCall[] {
   const tools: ToolCall[] = []
+  const hasStructured = recordHasStructuredToolUse(records)
+
   for (const rec of records) {
     if (rec.role !== 'assistant') continue
     for (const block of rec.message?.content ?? []) {
-      if (block.type !== 'text') continue
-      const extracted = parseToolCallsFromText(block.text)
-      tools.push(...extracted)
+      if (block.type === 'tool_use' && block.name) {
+        tools.push({
+          id: genId(),
+          name: block.name,
+          category: categorizeToolCall(block.name),
+          input: normalizeToolInput(block.input),
+          timestamp: new Date().toISOString(),
+        })
+      } else if (block.type === 'text' && block.text && !hasStructured) {
+        tools.push(...parseToolCallsFromText(block.text))
+      }
     }
   }
   return tools
@@ -281,23 +320,52 @@ export async function parseCursorSession(filePath: string): Promise<Session> {
   const mcpCalls: McpCall[] = []
   const ruleRefs: RuleRef[] = []
   let title = ''
+  const hasStructured = recordHasStructuredToolUse(records)
 
   for (const rec of records) {
-    const textParts = (rec.message?.content ?? [])
-      .filter((b) => b.type === 'text')
-      .map((b) => b.text)
+    const contentBlocks = rec.message?.content ?? []
+    const textParts = contentBlocks
+      .filter((b) => b.type === 'text' && b.text)
+      .map((b) => b.text!)
     const fullText = textParts.join('\n')
 
     if (rec.role === 'user' && !title) {
       title = extractUserQuery(fullText) || fullText.slice(0, 100)
     }
 
-    const blocks: ContentBlock[] = [{ type: 'text', text: fullText }]
+    const blocks: ContentBlock[] = []
 
-    const toolCalls = parseToolCallsFromText(fullText)
-    for (const tc of toolCalls) {
-      blocks.push({ type: 'tool_use', toolCall: tc })
-      processFileOp(tc, 'main', fileOps, skillHits, mcpCalls, ruleRefs)
+    if (fullText) {
+      blocks.push({ type: 'text', text: fullText })
+    }
+
+    for (const cb of contentBlocks) {
+      if (cb.type === 'thinking' && cb.thinking) {
+        blocks.push({ type: 'thinking', thinking: cb.thinking })
+      } else if (cb.type === 'tool_use' && cb.name) {
+        const input = normalizeToolInput(cb.input)
+        const tc: ToolCall = {
+          id: genId(),
+          name: cb.name,
+          category: categorizeToolCall(cb.name),
+          input,
+          timestamp: new Date().toISOString(),
+        }
+        blocks.push({ type: 'tool_use', toolCall: tc })
+        processFileOp(tc, 'main', fileOps, skillHits, mcpCalls, ruleRefs)
+      }
+    }
+
+    if (!hasStructured && fullText) {
+      const textToolCalls = parseToolCallsFromText(fullText)
+      for (const tc of textToolCalls) {
+        blocks.push({ type: 'tool_use', toolCall: tc })
+        processFileOp(tc, 'main', fileOps, skillHits, mcpCalls, ruleRefs)
+      }
+    }
+
+    if (blocks.length === 0) {
+      blocks.push({ type: 'text', text: '' })
     }
 
     turns.push({
@@ -522,6 +590,25 @@ function processFileOp(
 
   if ((tc.name === 'StrReplace' || tc.name === 'EditNotebook') && path) {
     fileOps.push({ path, type: 'update', agentId, timestamp: tc.timestamp, toolCallId: tc.id })
+  }
+
+  if (tc.name === 'ApplyPatch') {
+    const raw = (tc.input._raw ?? tc.input.patch ?? '') as string
+    const fileMatches = raw.match(/\*\*\* (?:Add|Update|Delete) File:\s*(\S+)/g)
+    if (fileMatches) {
+      for (const fm of fileMatches) {
+        const filePath = fm.replace(/^\*\*\* (?:Add|Update|Delete) File:\s*/, '')
+        const isAdd = fm.startsWith('*** Add')
+        const isDel = fm.startsWith('*** Delete')
+        fileOps.push({
+          path: filePath,
+          type: isDel ? 'delete' : isAdd ? 'create' : 'update',
+          agentId,
+          timestamp: tc.timestamp,
+          toolCallId: tc.id,
+        })
+      }
+    }
   }
 
   if (tc.name === 'CallMcpTool') {
