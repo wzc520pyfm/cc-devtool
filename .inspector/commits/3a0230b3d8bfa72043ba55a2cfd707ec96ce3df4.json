@@ -1,0 +1,25 @@
+{
+  "commit_hash": "3a0230b3d8bfa72043ba55a2cfd707ec96ce3df4",
+  "timestamp": "2026-04-26T00:32:13+08:00",
+  "message": "fix: enable window dragging on macOS overlay titlebar",
+  "intent": {
+    "summary": "enable window dragging on macOS overlay titlebar",
+    "category": "fix"
+  },
+  "impact": {
+    "files_changed": [
+      "src-tauri/Cargo.lock",
+      "src-tauri/Cargo.toml",
+      "src-tauri/capabilities/default.json",
+      "src-tauri/tauri.conf.json",
+      "src/components/layout/Layout.tsx"
+    ],
+    "cochange_candidates": [],
+    "constraints_applied": []
+  },
+  "context_refs": {
+    "decisions": [],
+    "related_commits": [],
+    "failed_attempts": []
+  }
+}

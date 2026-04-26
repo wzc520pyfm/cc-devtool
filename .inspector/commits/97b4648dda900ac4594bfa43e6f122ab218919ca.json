@@ -1,0 +1,23 @@
+{
+  "commit_hash": "97b4648dda900ac4594bfa43e6f122ab218919ca",
+  "timestamp": "2026-03-28T13:36:02+08:00",
+  "message": "fix: recover Cursor file ops from SQLite when JSONL lacks tool data",
+  "intent": {
+    "summary": "recover Cursor file ops from SQLite when JSONL lacks tool data",
+    "category": "fix"
+  },
+  "impact": {
+    "files_changed": [
+      "server/parsers/cursor-db.ts",
+      "server/parsers/cursor.ts",
+      "src/components/dashboard/ToolDashboard.tsx"
+    ],
+    "cochange_candidates": [],
+    "constraints_applied": []
+  },
+  "context_refs": {
+    "decisions": [],
+    "related_commits": [],
+    "failed_attempts": []
+  }
+}

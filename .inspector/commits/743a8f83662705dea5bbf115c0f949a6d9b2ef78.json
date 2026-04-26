@@ -1,0 +1,26 @@
+{
+  "commit_hash": "743a8f83662705dea5bbf115c0f949a6d9b2ef78",
+  "timestamp": "2026-04-20T23:43:40+08:00",
+  "message": "feat(proxy): cc-switch toggle, upstream presets, save & restart",
+  "intent": {
+    "summary": "cc-switch toggle, upstream presets, save & restart",
+    "category": "feature"
+  },
+  "impact": {
+    "files_changed": [
+      "server/api/proxy.ts",
+      "server/proxy/manager.ts",
+      "src/components/proxy/ProxyConfig.tsx",
+      "src/lib/api.ts",
+      "src/lib/proxyPresets.ts",
+      "src/stores/proxyStore.ts"
+    ],
+    "cochange_candidates": [],
+    "constraints_applied": []
+  },
+  "context_refs": {
+    "decisions": [],
+    "related_commits": [],
+    "failed_attempts": []
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "commit_hash": "e653cfa17626486e6534025ea96194e9116ca4a6",
+  "timestamp": "2026-03-31T17:35:24+08:00",
+  "message": "docs: update CHANGELOG with all v0.1.1 fixes",
+  "intent": {
+    "summary": "update CHANGELOG with all v0.1.1 fixes",
+    "category": "docs"
+  },
+  "impact": {
+    "files_changed": [
+      "CHANGELOG.md"
+    ],
+    "cochange_candidates": [],
+    "constraints_applied": []
+  },
+  "context_refs": {
+    "decisions": [],
+    "related_commits": [],
+    "failed_attempts": []
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "commit_hash": "06a0488f93f04f9384659bcc900d3dbde838d38a",
+  "timestamp": "2026-03-31T17:53:03+08:00",
+  "message": "fix: v0.1.2 - fix x64 cross-compile, CI partial failure, and Tauri desktop issues",
+  "intent": {
+    "summary": "v0.1.2 - fix x64 cross-compile, CI partial failure, and Tauri desktop issues",
+    "category": "fix"
+  },
+  "impact": {
+    "files_changed": [
+      ".github/workflows/release.yml",
+      ".history/src-tauri/tauri.conf_20260329203622.json",
+      ".history/src-tauri/tauri.conf_20260329205037.json",
+      ".history/src-tauri/tauri.conf_20260329205056.json",
+      ".history/src-tauri/tauri.conf_20260329205100.json",
+      ".history/src-tauri/tauri.conf_20260329205103.json",
+      ".history/src-tauri/tauri.conf_20260329205105.json",
+      ".history/src-tauri/tauri.conf_20260329205116.json",
+      "CHANGELOG.md",
+      "package.json",
+      "src-tauri/Cargo.toml",
+      "src-tauri/src/lib.rs",
+      "src-tauri/tauri.conf.json"
+    ],
+    "cochange_candidates": [],
+    "constraints_applied": []
+  },
+  "context_refs": {
+    "decisions": [],
+    "related_commits": [],
+    "failed_attempts": []
+  }
+}

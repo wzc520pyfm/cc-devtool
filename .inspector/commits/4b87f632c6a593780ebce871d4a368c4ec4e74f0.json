@@ -1,0 +1,24 @@
+{
+  "commit_hash": "4b87f632c6a593780ebce871d4a368c4ec4e74f0",
+  "timestamp": "2026-03-31T12:03:06+08:00",
+  "message": "fix: serve frontend from Tauri bundled assets instead of sidecar",
+  "intent": {
+    "summary": "serve frontend from Tauri bundled assets instead of sidecar",
+    "category": "fix"
+  },
+  "impact": {
+    "files_changed": [
+      "src-tauri/src/lib.rs",
+      "src-tauri/tauri.conf.json",
+      "src/hooks/useWebSocket.ts",
+      "src/lib/api.ts"
+    ],
+    "cochange_candidates": [],
+    "constraints_applied": []
+  },
+  "context_refs": {
+    "decisions": [],
+    "related_commits": [],
+    "failed_attempts": []
+  }
+}

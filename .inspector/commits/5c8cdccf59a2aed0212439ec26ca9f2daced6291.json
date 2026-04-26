@@ -1,0 +1,22 @@
+{
+  "commit_hash": "5c8cdccf59a2aed0212439ec26ca9f2daced6291",
+  "timestamp": "2026-03-26T09:29:32+08:00",
+  "message": "feat: add parser formats documentation and cc-devtool skill",
+  "intent": {
+    "summary": "add parser formats documentation and cc-devtool skill",
+    "category": "feature"
+  },
+  "impact": {
+    "files_changed": [
+      ".cursor/skills/cc-devtool/SKILL.md",
+      ".cursor/skills/cc-devtool/parser-formats.md"
+    ],
+    "cochange_candidates": [],
+    "constraints_applied": []
+  },
+  "context_refs": {
+    "decisions": [],
+    "related_commits": [],
+    "failed_attempts": []
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "project": "cc-devtool",
+  "generated_at": "2026-04-26T11:47:01.960Z",
+  "total_sessions": 0,
+  "total_commits": 25,
+  "timeline": [
+    {
+      "period": "2026-03",
+      "summary": "v0.1.2 - fix x64 cross-compile, CI partial failure, and Tauri desktop issues; use pnpm exec instead of npx for esbuild/pkg in CI; enhance execution visibility - skills, rules, shell commands, tokens",
+      "key_decisions": 0,
+      "commits": 19,
+      "topics": [
+        "workflows",
+        "src-tauri",
+        "src",
+        "scripts",
+        "cc-devtool",
+        "parsers",
+        "shared",
+        "dashboard",
+        "sessions",
+        "timeline",
+        "pages",
+        "hooks",
+        "lib",
+        "server",
+        "bin",
+        "cli",
+        "release-notes",
+        "api",
+        "proxy",
+        "binaries",
+        "capabilities",
+        "icons",
+        "layout",
+        "raw",
+        "stores"
+      ]
+    },
+    {
+      "period": "2026-04",
+      "summary": "enable window dragging on macOS overlay titlebar; bump version to 0.1.5; cc-switch toggle, upstream presets, save & restart",
+      "key_decisions": 0,
+      "commits": 6,
+      "topics": [
+        "src-tauri",
+        "capabilities",
+        "layout",
+        "cli",
+        "api",
+        "proxy",
+        "lib",
+        "stores",
+        "release-notes",
+        "parsers",
+        "pages"
+      ]
+    }
+  ],
+  "active_constraints": []
+}

@@ -1,0 +1,24 @@
+{
+  "commit_hash": "15938a210e5b96aa0283ac4e09266dbcca5684bd",
+  "timestamp": "2026-03-30T22:07:13+08:00",
+  "message": "fix: use pnpm exec instead of npx for esbuild/pkg in CI",
+  "intent": {
+    "summary": "use pnpm exec instead of npx for esbuild/pkg in CI",
+    "category": "fix"
+  },
+  "impact": {
+    "files_changed": [
+      ".github/workflows/release.yml",
+      "package.json",
+      "pnpm-lock.yaml",
+      "scripts/build-sidecar.js"
+    ],
+    "cochange_candidates": [],
+    "constraints_applied": []
+  },
+  "context_refs": {
+    "decisions": [],
+    "related_commits": [],
+    "failed_attempts": []
+  }
+}

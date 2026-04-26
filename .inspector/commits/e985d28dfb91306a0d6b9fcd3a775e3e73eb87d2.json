@@ -1,0 +1,35 @@
+{
+  "commit_hash": "e985d28dfb91306a0d6b9fcd3a775e3e73eb87d2",
+  "timestamp": "2026-03-27T21:26:30+08:00",
+  "message": "feat: integrate SQLite database support and enhance session detail features",
+  "intent": {
+    "summary": "integrate SQLite database support and enhance session detail features",
+    "category": "feature"
+  },
+  "impact": {
+    "files_changed": [
+      "package.json",
+      "pnpm-lock.yaml",
+      "server/api/sessions.ts",
+      "server/parsers/codex-db.ts",
+      "server/parsers/codex.ts",
+      "server/parsers/cursor-db.ts",
+      "server/parsers/cursor.ts",
+      "server/parsers/types.ts",
+      "server/watcher.ts",
+      "shared/types.ts",
+      "src/App.tsx",
+      "src/components/raw/RawFileViewer.tsx",
+      "src/components/sessions/SessionList.tsx",
+      "src/lib/api.ts",
+      "src/pages/SessionDetailPage.tsx"
+    ],
+    "cochange_candidates": [],
+    "constraints_applied": []
+  },
+  "context_refs": {
+    "decisions": [],
+    "related_commits": [],
+    "failed_attempts": []
+  }
+}

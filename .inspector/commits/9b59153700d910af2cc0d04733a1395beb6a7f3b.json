@@ -1,0 +1,21 @@
+{
+  "commit_hash": "9b59153700d910af2cc0d04733a1395beb6a7f3b",
+  "timestamp": "2026-03-31T14:40:37+08:00",
+  "message": "fix: add CORS headers so Tauri webview can reach sidecar API",
+  "intent": {
+    "summary": "add CORS headers so Tauri webview can reach sidecar API",
+    "category": "feature"
+  },
+  "impact": {
+    "files_changed": [
+      "server/index.ts"
+    ],
+    "cochange_candidates": [],
+    "constraints_applied": []
+  },
+  "context_refs": {
+    "decisions": [],
+    "related_commits": [],
+    "failed_attempts": []
+  }
+}

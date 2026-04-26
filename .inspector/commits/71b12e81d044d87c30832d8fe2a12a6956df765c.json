@@ -1,0 +1,21 @@
+{
+  "commit_hash": "71b12e81d044d87c30832d8fe2a12a6956df765c",
+  "timestamp": "2026-03-31T11:32:39+08:00",
+  "message": "fix: resolve white screen on macOS by navigating webview after sidecar ready",
+  "intent": {
+    "summary": "resolve white screen on macOS by navigating webview after sidecar ready",
+    "category": "fix"
+  },
+  "impact": {
+    "files_changed": [
+      "src-tauri/src/lib.rs"
+    ],
+    "cochange_candidates": [],
+    "constraints_applied": []
+  },
+  "context_refs": {
+    "decisions": [],
+    "related_commits": [],
+    "failed_attempts": []
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "commit_hash": "30fafe94f1e9b67acf7e4000a3fabc4b547af239",
+  "timestamp": "2026-03-27T19:40:45+08:00",
+  "message": "feat: enhance execution visibility - skills, rules, shell commands, tokens",
+  "intent": {
+    "summary": "enhance execution visibility - skills, rules, shell commands, tokens",
+    "category": "feature"
+  },
+  "impact": {
+    "files_changed": [
+      ".cursor/skills/cc-devtool/SKILL.md",
+      "server/parsers/claude-code.ts",
+      "server/parsers/codex.ts",
+      "server/parsers/cursor.ts",
+      "shared/types.ts",
+      "src/components/dashboard/ToolDashboard.tsx",
+      "src/components/sessions/SessionList.tsx",
+      "src/components/timeline/ToolCallCard.tsx",
+      "src/pages/SessionDetailPage.tsx"
+    ],
+    "cochange_candidates": [],
+    "constraints_applied": []
+  },
+  "context_refs": {
+    "decisions": [],
+    "related_commits": [],
+    "failed_attempts": []
+  }
+}

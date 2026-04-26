@@ -1,0 +1,23 @@
+{
+  "commit_hash": "7e1982d4c6d8bdc64bfd08bc7560819e343e25dd",
+  "timestamp": "2026-03-26T09:29:21+08:00",
+  "message": "refactor: enhance session handling and UI updates",
+  "intent": {
+    "summary": "enhance session handling and UI updates",
+    "category": "refactor"
+  },
+  "impact": {
+    "files_changed": [
+      "server/parsers/cursor.ts",
+      "src/components/sessions/SessionFilters.tsx",
+      "src/pages/SessionDetailPage.tsx"
+    ],
+    "cochange_candidates": [],
+    "constraints_applied": []
+  },
+  "context_refs": {
+    "decisions": [],
+    "related_commits": [],
+    "failed_attempts": []
+  }
+}

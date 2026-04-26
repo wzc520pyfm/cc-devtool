@@ -1,0 +1,31 @@
+{
+  "commit_hash": "ab4681dd414dab342947339a957b5abd93971c21",
+  "timestamp": "2026-04-01T00:19:16+08:00",
+  "message": "feat: enhanced proxy capture with full content blocks and cc-switch auto-detection",
+  "intent": {
+    "summary": "enhanced proxy capture with full content blocks and cc-switch auto-detection",
+    "category": "feature"
+  },
+  "impact": {
+    "files_changed": [
+      "CHANGELOG.md",
+      "package.json",
+      "server/parsers/proxy-capture.ts",
+      "server/proxy/capture.ts",
+      "server/proxy/manager.ts",
+      "src-tauri/Cargo.toml",
+      "src-tauri/tauri.conf.json",
+      "src/components/proxy/ProxyConfig.tsx",
+      "src/components/proxy/ProxyUsage.tsx",
+      "src/lib/api.ts",
+      "src/pages/ProxyPage.tsx"
+    ],
+    "cochange_candidates": [],
+    "constraints_applied": []
+  },
+  "context_refs": {
+    "decisions": [],
+    "related_commits": [],
+    "failed_attempts": []
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "commit_hash": "e50f49c8656c71510d741cdcf8fd3bb5f3521a8a",
+  "timestamp": "2026-03-30T09:11:35+08:00",
+  "message": "fix: add externalBin to bundle sidecar into Tauri app package",
+  "intent": {
+    "summary": "add externalBin to bundle sidecar into Tauri app package",
+    "category": "feature"
+  },
+  "impact": {
+    "files_changed": [
+      "src-tauri/tauri.conf.json"
+    ],
+    "cochange_candidates": [],
+    "constraints_applied": []
+  },
+  "context_refs": {
+    "decisions": [],
+    "related_commits": [],
+    "failed_attempts": []
+  }
+}

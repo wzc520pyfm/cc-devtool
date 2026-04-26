@@ -1,0 +1,21 @@
+{
+  "commit_hash": "a680c271f3192223792c7319cb27732286e84f3f",
+  "timestamp": "2026-03-28T23:56:49+08:00",
+  "message": "docs: add project README with usage, architecture, and development guide",
+  "intent": {
+    "summary": "add project README with usage, architecture, and development guide",
+    "category": "feature"
+  },
+  "impact": {
+    "files_changed": [
+      "README.md"
+    ],
+    "cochange_candidates": [],
+    "constraints_applied": []
+  },
+  "context_refs": {
+    "decisions": [],
+    "related_commits": [],
+    "failed_attempts": []
+  }
+}

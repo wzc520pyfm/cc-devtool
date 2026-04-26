@@ -1,0 +1,27 @@
+{
+  "commit_hash": "8ee557edcadad8d51ab1f95439c197df8355d799",
+  "timestamp": "2026-04-21T00:18:24+08:00",
+  "message": "chore: bump version to 0.1.4",
+  "intent": {
+    "summary": "bump version to 0.1.4",
+    "category": "chore"
+  },
+  "impact": {
+    "files_changed": [
+      "CHANGELOG.md",
+      "cli/index.ts",
+      "docs/release-notes/v0.1.4-en.md",
+      "docs/release-notes/v0.1.4-zh.md",
+      "package.json",
+      "src-tauri/Cargo.toml",
+      "src-tauri/tauri.conf.json"
+    ],
+    "cochange_candidates": [],
+    "constraints_applied": []
+  },
+  "context_refs": {
+    "decisions": [],
+    "related_commits": [],
+    "failed_attempts": []
+  }
+}

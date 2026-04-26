@@ -1,0 +1,23 @@
+{
+  "commit_hash": "9efa4fbd3b6599604b299d00309a4f8510745a63",
+  "timestamp": "2026-03-30T21:59:12+08:00",
+  "message": "fix: bundle ESM to CJS with esbuild before pkg compilation",
+  "intent": {
+    "summary": "bundle ESM to CJS with esbuild before pkg compilation",
+    "category": "fix"
+  },
+  "impact": {
+    "files_changed": [
+      ".github/workflows/release.yml",
+      "package.json",
+      "scripts/build-sidecar.js"
+    ],
+    "cochange_candidates": [],
+    "constraints_applied": []
+  },
+  "context_refs": {
+    "decisions": [],
+    "related_commits": [],
+    "failed_attempts": []
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "commit_hash": "3df66c4a6c914671874570eeeb6681bcc5b4b081",
+  "timestamp": "2026-03-31T09:40:34+08:00",
+  "message": "fix: resolve macOS app crash caused by deprecated shell scope config",
+  "intent": {
+    "summary": "resolve macOS app crash caused by deprecated shell scope config",
+    "category": "fix"
+  },
+  "impact": {
+    "files_changed": [
+      "CHANGELOG.md",
+      "package.json",
+      "src-tauri/Cargo.toml",
+      "src-tauri/tauri.conf.json"
+    ],
+    "cochange_candidates": [],
+    "constraints_applied": []
+  },
+  "context_refs": {
+    "decisions": [],
+    "related_commits": [],
+    "failed_attempts": []
+  }
+}

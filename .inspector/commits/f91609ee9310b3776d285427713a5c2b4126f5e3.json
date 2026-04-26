@@ -1,0 +1,27 @@
+{
+  "commit_hash": "f91609ee9310b3776d285427713a5c2b4126f5e3",
+  "timestamp": "2026-04-12T21:24:26+08:00",
+  "message": "perf: speed up session list; fix empty state on fetch failure",
+  "intent": {
+    "summary": "speed up session list; fix empty state on fetch failure",
+    "category": "chore"
+  },
+  "impact": {
+    "files_changed": [
+      "server/api/sessions.ts",
+      "server/parsers/cursor-db.ts",
+      "server/parsers/cursor.ts",
+      "server/parsers/detect.ts",
+      "src/lib/api.ts",
+      "src/pages/SessionListPage.tsx",
+      "src/stores/sessionStore.ts"
+    ],
+    "cochange_candidates": [],
+    "constraints_applied": []
+  },
+  "context_refs": {
+    "decisions": [],
+    "related_commits": [],
+    "failed_attempts": []
+  }
+}

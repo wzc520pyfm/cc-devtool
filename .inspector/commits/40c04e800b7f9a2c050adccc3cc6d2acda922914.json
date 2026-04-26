@@ -1,0 +1,25 @@
+{
+  "commit_hash": "40c04e800b7f9a2c050adccc3cc6d2acda922914",
+  "timestamp": "2026-04-26T13:59:37+08:00",
+  "message": "chore: bump version to 0.1.5",
+  "intent": {
+    "summary": "bump version to 0.1.5",
+    "category": "chore"
+  },
+  "impact": {
+    "files_changed": [
+      "cli/index.ts",
+      "package.json",
+      "src-tauri/Cargo.toml",
+      "src-tauri/tauri.conf.json",
+      "src/components/layout/Layout.tsx"
+    ],
+    "cochange_candidates": [],
+    "constraints_applied": []
+  },
+  "context_refs": {
+    "decisions": [],
+    "related_commits": [],
+    "failed_attempts": []
+  }
+}
