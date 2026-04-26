@@ -1,6 +1,6 @@
 [package]
 name = "cc-devtool"
-version = "0.1.4"
+version = "0.1.5"
 description = "AI Agent Execution Debugger"
 authors = ["cc-devtool"]
 license = "MIT"

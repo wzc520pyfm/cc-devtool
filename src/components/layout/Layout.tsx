@@ -69,7 +69,7 @@ export default function Layout() {
           </div>
         )}
         <div className="p-3 border-t border-zinc-800 text-xs text-zinc-600">
-          v0.1.0
+          v0.1.5
         </div>
       </aside>
       <main className="flex-1 overflow-hidden">
