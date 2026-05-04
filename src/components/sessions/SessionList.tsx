@@ -66,20 +66,20 @@ function SessionCard({
               <DataSourceBadge source={session.dataSource} />
             )}
             {session.model && (
-              <span className="text-[10px] text-zinc-600">{session.model}</span>
+              <span className="text-[10px] text-zinc-400">{session.model}</span>
             )}
           </div>
           <p className="text-sm font-medium text-zinc-200 truncate group-hover:text-zinc-100">
             {session.title}
           </p>
-          <p className="text-xs text-zinc-600 mt-0.5 truncate">{session.project}</p>
+          <p className="text-xs text-zinc-400 mt-0.5 truncate">{session.project}</p>
         </div>
         <div className="text-right shrink-0">
-          <p className="text-xs text-zinc-500">{formatDate(startDate)}</p>
-          <p className="text-[10px] text-zinc-600 mt-1">{formatTime(startDate)}</p>
+          <p className="text-xs text-zinc-400">{formatDate(startDate)}</p>
+          <p className="text-[10px] text-zinc-400 mt-1">{formatTime(startDate)}</p>
         </div>
       </div>
-      <div className="flex items-center gap-4 mt-2 text-[11px] text-zinc-500">
+      <div className="flex items-center gap-4 mt-2 text-[11px] text-zinc-400">
         <span>{session.turnCount} turns</span>
         {session.hasToolData ? (
           <>
@@ -88,7 +88,7 @@ function SessionCard({
             {session.agentCount > 1 && <span>{session.agentCount} agents</span>}
           </>
         ) : (
-          <span className="text-zinc-600 italic">tool data unavailable</span>
+          <span className="text-zinc-400 italic">tool data unavailable</span>
         )}
         {session.tokenUsage.totalTokens > 0 && (
           <span>{formatTokens(session.tokenUsage.totalTokens)}</span>
@@ -97,7 +97,7 @@ function SessionCard({
           <span className="text-cyan-400/60">{session.codeStats.uniqueFiles} code files</span>
         )}
         {session.gitContext?.branch && (
-          <span className="text-zinc-600 font-mono">{session.gitContext.branch}</span>
+          <span className="text-zinc-400 font-mono">{session.gitContext.branch}</span>
         )}
       </div>
       {session.dataAvailability && (
@@ -128,12 +128,12 @@ function DataAvailabilityBar({ availability }: { availability: DataAvailability 
         {dims.map((d) => (
           <div key={d.key} className="flex items-center gap-0.5" title={`${d.label}: ${availability[d.key]}`}>
             <span className={`w-1.5 h-1.5 rounded-full ${availabilityColor[availability[d.key]]}`} />
-            <span className="text-[9px] text-zinc-600">{d.label}</span>
+            <span className="text-[9px] text-zinc-400">{d.label}</span>
           </div>
         ))}
       </div>
       {availability.reason && (
-        <span className="text-[9px] text-zinc-600 italic truncate">{availability.reason}</span>
+        <span className="text-[9px] text-zinc-400 italic truncate">{availability.reason}</span>
       )}
     </div>
   )

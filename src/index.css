@@ -63,3 +63,19 @@ body {
 .recharts-legend-item-text {
   color: #a1a1aa !important;
 }
+
+/* Recharts default tooltip: payload rows ignore contentStyle.color in many versions */
+.recharts-default-tooltip {
+  color: #fafafa !important;
+}
+
+.recharts-tooltip-label {
+  color: #fafafa !important;
+}
+
+.recharts-tooltip-item-list .recharts-tooltip-item,
+.recharts-tooltip-item-list .recharts-tooltip-item-name,
+.recharts-tooltip-item-list .recharts-tooltip-item-separator,
+.recharts-tooltip-item-list .recharts-tooltip-item-value {
+  color: #e4e4e7 !important;
+}

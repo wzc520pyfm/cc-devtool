@@ -43,12 +43,21 @@ const categoryLabels: Record<ToolCategory, string> = {
   other: 'Other',
 }
 
+const chartTickFill = '#a1a1aa'
+
 const tooltipStyle = {
   background: '#18181b',
   border: '1px solid #3f3f46',
   borderRadius: 8,
-  color: '#fafafa',
   fontSize: 12,
+}
+
+/** Recharts applies item text separately; contentStyle.color alone leaves values black on dark bg. */
+const tooltipProps = {
+  contentStyle: tooltipStyle,
+  labelStyle: { color: '#fafafa', fontWeight: 600 },
+  itemStyle: { color: '#e4e4e7' },
+  wrapperStyle: { outline: 'none' },
 }
 
 function extractAllToolCalls(session: Session): ToolCall[] {
@@ -110,10 +119,10 @@ export default function ToolDashboard({ session }: Props) {
     <div className="p-4 space-y-6">
       {/* Data availability notice */}
       {(!hasAnyToolData || !hasTokenData) && (
-        <div className="border border-zinc-800 rounded-lg p-3 bg-zinc-900/50">
+        <div className="border border-zinc-800 rounded-lg p-3 bg-zinc-900/80">
           <div className="flex items-start gap-2">
-            <span className="text-zinc-600 text-sm mt-0.5">ℹ</span>
-            <div className="text-xs text-zinc-500 space-y-0.5">
+            <span className="text-zinc-400 text-sm mt-0.5">ℹ</span>
+            <div className="text-xs text-zinc-400 space-y-0.5">
               {session.id.startsWith('proxy-') && (
                 <p className="text-rose-400/80">
                   Data source: API proxy capture — token usage available, tool-level detail may be limited.
@@ -155,23 +164,23 @@ export default function ToolDashboard({ session }: Props) {
           <div className="grid grid-cols-5 gap-3 mb-4">
             <div className="text-center">
               <p className="text-lg font-bold text-zinc-100">{totalTokens.toLocaleString()}</p>
-              <p className="text-[10px] text-zinc-500 uppercase tracking-wider">Total</p>
+              <p className="text-[10px] text-zinc-400 uppercase tracking-wider">Total</p>
             </div>
             <div className="text-center">
               <p className="text-lg font-bold text-sky-400">{inputTokens.toLocaleString()}</p>
-              <p className="text-[10px] text-zinc-500 uppercase tracking-wider">Input</p>
+              <p className="text-[10px] text-zinc-400 uppercase tracking-wider">Input</p>
             </div>
             <div className="text-center">
               <p className="text-lg font-bold text-emerald-400">{outputTokens.toLocaleString()}</p>
-              <p className="text-[10px] text-zinc-500 uppercase tracking-wider">Output</p>
+              <p className="text-[10px] text-zinc-400 uppercase tracking-wider">Output</p>
             </div>
             <div className="text-center">
               <p className="text-lg font-bold text-amber-400">{cacheCreationTokens.toLocaleString()}</p>
-              <p className="text-[10px] text-zinc-500 uppercase tracking-wider">Cache Write</p>
+              <p className="text-[10px] text-zinc-400 uppercase tracking-wider">Cache Write</p>
             </div>
             <div className="text-center">
               <p className="text-lg font-bold text-violet-400">{cacheReadTokens.toLocaleString()}</p>
-              <p className="text-[10px] text-zinc-500 uppercase tracking-wider">Cache Read</p>
+              <p className="text-[10px] text-zinc-400 uppercase tracking-wider">Cache Read</p>
             </div>
           </div>
           {/* Token usage ratio bar */}
@@ -183,7 +192,7 @@ export default function ToolDashboard({ session }: Props) {
               <div className="bg-violet-500" style={{ width: `${(cacheReadTokens / totalTokens) * 100}%` }} />
             </div>
           )}
-          <div className="flex gap-4 mt-2 text-[10px] text-zinc-500">
+          <div className="flex gap-4 mt-2 text-[10px] text-zinc-400">
             <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-sky-500" />Input</span>
             <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-emerald-500" />Output</span>
             <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-amber-500" />Cache Write</span>
@@ -198,9 +207,9 @@ export default function ToolDashboard({ session }: Props) {
           <h3 className="text-sm font-semibold text-zinc-300 mb-3">Tool Usage Distribution</h3>
           <ResponsiveContainer width="100%" height={250}>
             <BarChart data={barData}>
-              <XAxis dataKey="name" tick={{ fill: '#71717a', fontSize: 11 }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fill: '#71717a', fontSize: 11 }} axisLine={false} tickLine={false} allowDecimals={false} />
-              <Tooltip contentStyle={tooltipStyle} cursor={{ fill: 'rgba(255,255,255,0.04)' }} />
+              <XAxis dataKey="name" tick={{ fill: chartTickFill, fontSize: 11 }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fill: chartTickFill, fontSize: 11 }} axisLine={false} tickLine={false} allowDecimals={false} />
+              <Tooltip {...tooltipProps} cursor={{ fill: 'rgba(255,255,255,0.04)' }} />
               <Bar dataKey="count" radius={[4, 4, 0, 0]}>
                 {barData.map((entry, i) => (
                   <Cell key={i} fill={entry.fill} />
@@ -227,12 +236,12 @@ export default function ToolDashboard({ session }: Props) {
                   <Cell key={i} fill={entry.fill} />
                 ))}
               </Pie>
-              <Tooltip contentStyle={tooltipStyle} />
+              <Tooltip {...tooltipProps} />
             </PieChart>
           </ResponsiveContainer>
           <div className="flex flex-wrap gap-2 mt-2">
             {pieData.map((d) => (
-              <span key={d.name} className="flex items-center gap-1 text-[10px] text-zinc-500">
+              <span key={d.name} className="flex items-center gap-1 text-[10px] text-zinc-400">
                 <span className="w-2 h-2 rounded-full" style={{ backgroundColor: d.fill }} />
                 {d.name} ({d.value})
               </span>
@@ -247,9 +256,9 @@ export default function ToolDashboard({ session }: Props) {
           <h3 className="text-sm font-semibold text-zinc-300 mb-3">Token Usage Over Time</h3>
           <ResponsiveContainer width="100%" height={220}>
             <AreaChart data={cumulativeData}>
-              <XAxis dataKey="turn" tick={{ fill: '#71717a', fontSize: 11 }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fill: '#71717a', fontSize: 11 }} axisLine={false} tickLine={false} />
-              <Tooltip contentStyle={tooltipStyle} cursor={{ stroke: '#3f3f46' }} />
+              <XAxis dataKey="turn" tick={{ fill: chartTickFill, fontSize: 11 }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fill: chartTickFill, fontSize: 11 }} axisLine={false} tickLine={false} />
+              <Tooltip {...tooltipProps} cursor={{ stroke: '#3f3f46' }} />
               <Legend wrapperStyle={{ fontSize: 11, color: '#a1a1aa' }} />
               <Area type="monotone" dataKey="input" stackId="1" stroke="#38bdf8" fill="#38bdf8" fillOpacity={0.3} name="Input" />
               <Area type="monotone" dataKey="output" stackId="1" stroke="#34d399" fill="#34d399" fillOpacity={0.3} name="Output" />
@@ -282,9 +291,9 @@ export default function ToolDashboard({ session }: Props) {
               <div key={i} className="flex items-center gap-2 text-xs px-2 py-1.5 rounded bg-yellow-500/5 border border-yellow-500/10">
                 <span className="text-yellow-400 font-medium shrink-0">{hit.name}</span>
                 {hit.fullPath && (
-                  <span className="text-zinc-600 truncate text-[10px] font-mono">{hit.fullPath}</span>
+                  <span className="text-zinc-400 truncate text-[10px] font-mono">{hit.fullPath}</span>
                 )}
-                <span className="text-zinc-700 ml-auto shrink-0">{hit.agentId}</span>
+                <span className="text-zinc-500 ml-auto shrink-0">{hit.agentId}</span>
               </div>
             ))}
           </div>
@@ -306,7 +315,7 @@ export default function ToolDashboard({ session }: Props) {
               return (
                 <div key={i} className="flex items-center gap-2 text-xs px-2 py-1.5 rounded bg-indigo-500/5 border border-indigo-500/10">
                   <span className="text-indigo-400 font-medium">{fileName}</span>
-                  {dir && <span className="text-zinc-600 truncate text-[10px] font-mono">{dir}</span>}
+                  {dir && <span className="text-zinc-400 truncate text-[10px] font-mono">{dir}</span>}
                 </div>
               )
             })}
@@ -366,13 +375,13 @@ function ShellCommandList({ commands }: { commands: ToolCall[] }) {
                 <code className="text-xs text-zinc-300 font-mono break-all">
                   {command.length > 120 && !isExpanded ? command.slice(0, 120) + '...' : command}
                 </code>
-                {desc && <p className="text-[10px] text-zinc-600 mt-0.5">{desc}</p>}
+                {desc && <p className="text-[10px] text-zinc-400 mt-0.5">{desc}</p>}
               </div>
-              <span className="text-[10px] text-zinc-600 shrink-0">{isExpanded ? '▼' : '▶'}</span>
+              <span className="text-[10px] text-zinc-400 shrink-0">{isExpanded ? '▼' : '▶'}</span>
             </button>
             {isExpanded && cmd.result && (
               <div className="border-t border-zinc-800/50 px-3 py-2">
-                <pre className="text-[11px] text-zinc-500 font-mono whitespace-pre-wrap max-h-48 overflow-y-auto">
+                <pre className="text-[11px] text-zinc-400 font-mono whitespace-pre-wrap max-h-48 overflow-y-auto">
                   {cmd.result.slice(0, 3000)}
                 </pre>
               </div>
@@ -395,7 +404,7 @@ function StatCard({
 }) {
   return (
     <div className="border border-zinc-800 rounded-lg p-3">
-      <p className="text-[10px] text-zinc-500 uppercase tracking-wider">{label}</p>
+      <p className="text-[10px] text-zinc-400 uppercase tracking-wider">{label}</p>
       <p className={`text-xl font-bold mt-0.5 ${color}`}>{value}</p>
     </div>
   )

@@ -142,7 +142,7 @@ export default function SessionDetailPage() {
             className={`px-4 py-2.5 text-sm font-medium transition-colors border-b-2 ${
               activeTab === tab.id
                 ? 'border-indigo-500 text-zinc-100'
-                : 'border-transparent text-zinc-500 hover:text-zinc-300'
+                : 'border-transparent text-zinc-400 hover:text-zinc-200'
             }`}
           >
             {tab.label}
