@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.1.7] - 2026-05-04
+
+### Fixed
+
+- Dark UI: higher contrast for secondary text (sidebar, session list, session detail tabs, dashboard notices and labels)
+- Recharts tooltips: series values and labels use readable light colors on dark tooltip backgrounds
+
+---
+
 ## [0.1.4] - 2026-04-20
 
 ### Performance

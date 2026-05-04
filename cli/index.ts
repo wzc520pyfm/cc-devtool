@@ -7,7 +7,7 @@ const program = new Command()
 program
   .name('cc-devtool')
   .description('AI Agent Execution Debugger')
-  .version('0.1.5')
+  .version('0.1.7')
 
 program
   .command('serve')
